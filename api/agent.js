@@ -1,48 +1,52 @@
-// api/agent.js
-import 'reflect-metadata'
-import { createAgent } from '@veramo/core'
-import { DIDManager, MemoryDIDStore } from '@veramo/did-manager'
-import { KeyManager, MemoryKeyStore, MemoryPrivateKeyStore } from '@veramo/key-manager'
-import { KeyManagementSystem } from '@veramo/kms-local'
-import { DIDResolverPlugin } from '@veramo/did-resolver'
-import { Resolver } from 'did-resolver'
-import { getDidKeyResolver, KeyDIDProvider } from '@veramo/did-provider-key'
-import { getResolver as getEthrResolver } from 'ethr-did-resolver'
-import { getResolver as getWebResolver } from 'web-did-resolver'
-
-// Cache agent between invocations to reduce cold-starts
 let cachedAgent = null
 
 async function getAgent() {
   if (cachedAgent) return cachedAgent
 
-  const agent = createAgent({
-    plugins: [
-      new KeyManager({
-        store: new MemoryKeyStore(),
-        kms: {
-          local: new KeyManagementSystem(new MemoryPrivateKeyStore()),
-        },
-      }),
-      new DIDManager({
-        store: new MemoryDIDStore(),
-        defaultProvider: 'did:key',
-        providers: {
-          'did:key': new KeyDIDProvider({ defaultKms: 'local' }),
-        },
-      }),
-      new DIDResolverPlugin({
-        resolver: new Resolver({
-          ...getDidKeyResolver(),
-          ...getEthrResolver({ infuraProjectId: process.env.INFURA_PROJECT_ID || '' }),
-          ...getWebResolver(),
-        }),
-      }),
-    ],
-  })
+  try {
+    // dynamic import ESM-only modules at runtime
+    await import('reflect-metadata')
+    const { createAgent } = await import('@veramo/core')
+    const { DIDManager, MemoryDIDStore } = await import('@veramo/did-manager')
+    const { KeyManager, MemoryKeyStore, MemoryPrivateKeyStore } = await import('@veramo/key-manager')
+    const { KeyManagementSystem } = await import('@veramo/kms-local')
+    const { DIDResolverPlugin } = await import('@veramo/did-resolver')
+    const { Resolver } = await import('did-resolver')
+    const { getDidKeyResolver, KeyDIDProvider } = await import('@veramo/did-provider-key')
+    const { getResolver: getEthrResolver } = await import('ethr-did-resolver')
+    const { getResolver: getWebResolver } = await import('web-did-resolver')
 
-  cachedAgent = agent
-  return agent
+    const agent = createAgent({
+      plugins: [
+        new KeyManager({
+          store: new MemoryKeyStore(),
+          kms: {
+            local: new KeyManagementSystem(new MemoryPrivateKeyStore()),
+          },
+        }),
+        new DIDManager({
+          store: new MemoryDIDStore(),
+          defaultProvider: 'did:key',
+          providers: {
+            'did:key': new KeyDIDProvider({ defaultKms: 'local' }),
+          },
+        }),
+        new DIDResolverPlugin({
+          resolver: new Resolver({
+            ...getDidKeyResolver(),
+            ...getEthrResolver({ infuraProjectId: process.env.INFURA_PROJECT_ID || '' }),
+            ...getWebResolver(),
+          }),
+        }),
+      ],
+    })
+
+    cachedAgent = agent
+    return agent
+  } catch (err) {
+    console.error('Failed to dynamically import Veramo modules:', err)
+    throw err
+  }
 }
 
 export default async function handler(req, res) {
