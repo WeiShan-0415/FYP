@@ -16,6 +16,27 @@ async function getAgent() {
     const { getResolver: getEthrResolver } = await import('ethr-did-resolver')
     const { getResolver: getWebResolver } = await import('web-did-resolver')
 
+    // Build resolver mapping conditionally. The ethr resolver requires at least one network
+    // (Infura project ID or explicit RPC network). Only include it when config is present.
+    const didKeyResolver = getDidKeyResolver()
+    const webResolver = getWebResolver()
+    const resolvers = {
+      ...didKeyResolver,
+      ...webResolver,
+    }
+
+    // Include Ethereum resolver if Infura project ID or ETH_RPC_URL provided
+    if (process.env.INFURA_PROJECT_ID) {
+      Object.assign(resolvers, getEthrResolver({ infuraProjectId: process.env.INFURA_PROJECT_ID }))
+      console.log('ethr-did-resolver included via INFURA_PROJECT_ID')
+    } else if (process.env.ETH_RPC_URL) {
+      // ethr-did-resolver accepts networks option; supply a single RPC network
+      Object.assign(resolvers, getEthrResolver({ networks: [{ name: 'custom', rpcUrl: process.env.ETH_RPC_URL }] }))
+      console.log('ethr-did-resolver included via ETH_RPC_URL')
+    } else {
+      console.log('ethr-did-resolver not included (no INFURA_PROJECT_ID or ETH_RPC_URL)')
+    }
+
     const agent = createAgent({
       plugins: [
         new KeyManager({
@@ -32,11 +53,7 @@ async function getAgent() {
           },
         }),
         new DIDResolverPlugin({
-          resolver: new Resolver({
-            ...getDidKeyResolver(),
-            ...getEthrResolver({ infuraProjectId: process.env.INFURA_PROJECT_ID || '' }),
-            ...getWebResolver(),
-          }),
+          resolver: new Resolver(resolvers),
         }),
       ],
     })
