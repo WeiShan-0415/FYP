@@ -1,3 +1,5 @@
+import { cloneElement } from 'react'
+
 let cachedAgent = null
 
 async function getAgent() {
@@ -16,7 +18,7 @@ async function getAgent() {
     const { getResolver: getEthrResolver } = await import('ethr-did-resolver')
     const{EthrDidProvider}=await import('@veramo/did-provider-ethr')
     const { getResolver: getWebResolver } = await import('web-did-resolver')
-
+    const {CredentialPlugin}=await import('@veramo/credential-w3c')
     // Build resolver mapping conditionally. The ethr resolver requires at least one network
     // (Infura project ID or explicit RPC network). Only include it when config is present.
     const didKeyResolver = getDidKeyResolver()
@@ -78,6 +80,7 @@ if (process.env.INFURA_PROJECT_ID) {
         new DIDResolverPlugin({
           resolver: new Resolver(resolvers),
         }),
+        new CredentialPlugin(),
       ],
     })
 
@@ -102,7 +105,28 @@ export default async function handler(req, res) {
       const identifier = await agent.didManagerCreate({ provider: 'did:ethr:sepolia' })
       return res.status(200).json(identifier)
     }
+    if (url.endsWith('/issue-credential') && method === 'POST') {
+      const agent = await getAgent()
+      const { subjectDID, name,degree}=await req.json()
 
+      // create issuer did if needed
+      const issuer = await agent.didManagerGetOrCreate({ provider: 'did:ethr:sepolia' })
+      //build credential
+      const credential=await agent.createVerifiableCredential({
+        credential:{
+          issuer: { id: issuer.did },
+          credentialSubject: {
+            id: subjectDID,
+            name:name,
+            degree:degree
+          },
+          type:['VerifiableCredential','UniversityDegreeCredential'],
+          issuanceDate: new Date().toISOString(),
+        },
+        proofFormat:'jwt',
+      })
+      return res.status(200).json(credential)
+    }
     res.status(404).json({ error: 'not found' })
   } catch (err) {
     console.error('Agent error:', err)
