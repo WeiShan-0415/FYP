@@ -100,16 +100,16 @@ export default async function handler(req, res) {
   const path = new URL(req.url, `http://${req.headers.host}`).pathname
 
   try {
-    if (path === '/api/ping' && method === 'GET') {
+    if (path === '/api/agent/ping' && method === 'GET') {
       return res.status(200).json({ message: '✅ Veramo Agent is alive!' })
     }
 
-    if (path === '/api/create-did' && method === 'GET')  {
+    if (path === '/api/agent/create-did' && method === 'GET')  {
       const agent = await getAgent()
       const identifier = await agent.didManagerCreate({ provider: 'did:ethr:sepolia' })
       return res.status(200).json(identifier)
     }
-    if (path === '/api/issue-credential' && method === 'POST') {
+    if (path === '/api/agent/issue-credential' && method === 'POST') {
       const agent = await getAgent()
       const { subjectDID, name, degree } = req.body
 
