@@ -17,8 +17,10 @@ async function getAgent() {
     const { getDidKeyResolver, KeyDIDProvider } = await import('@veramo/did-provider-key')
     const { getResolver: getEthrResolver } = await import('ethr-did-resolver')
     const{EthrDidProvider}=await import('@veramo/did-provider-ethr')
+    const { EthrDIDProvider } = await import('@veramo/did-provider-ethr')
     const { getResolver: getWebResolver } = await import('web-did-resolver')
     const {CredentialPlugin}=await import('@veramo/credential-w3c')
+
     // Build resolver mapping conditionally. The ethr resolver requires at least one network
     // (Infura project ID or explicit RPC network). Only include it when config is present.
     const didKeyResolver = getDidKeyResolver()
@@ -94,25 +96,27 @@ if (process.env.INFURA_PROJECT_ID) {
 
 export default async function handler(req, res) {
   const { method, url } = req
-  // simple router for /api/agent/ping and /api/agent/create-did
+  console.log('Incoming request:', method, url)
+  const path = new URL(req.url, `http://${req.headers.host}`).pathname
+
   try {
-    if (url.endsWith('/ping') && method === 'GET') {
+    if (path === '/api/ping' && method === 'GET') {
       return res.status(200).json({ message: '✅ Veramo Agent is alive!' })
     }
 
-    if (url.endsWith('/create-did') && method === 'GET') {
+    if (path === '/api/create-did' && method === 'GET')  {
       const agent = await getAgent()
       const identifier = await agent.didManagerCreate({ provider: 'did:ethr:sepolia' })
       return res.status(200).json(identifier)
     }
-    if (url.endsWith('/issue-credential') && method === 'POST') {
+    if (path === '/api/issue-credential' && method === 'POST') {
       const agent = await getAgent()
-      const { subjectDID, name,degree}=await req.json()
+      const { subjectDID, name, degree } = req.body
 
       // create issuer did if needed
       const issuer = await agent.didManagerGetOrCreate({ provider: 'did:ethr:sepolia' })
       //build credential
-      const credential=await agent.createVerifiableCredential({
+      const credential = await agent.createVerifiableCredential({
         credential:{
           issuer: { id: issuer.did },
           credentialSubject: {

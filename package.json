@@ -25,6 +25,7 @@
     "did-resolver": "^4.1.0",
     "ethr-did-resolver": "^11.0.5",
     "express": "^5.1.0",
+    "reflect-metadata": "^0.2.2",
     "web-did-resolver": "^2.0.30"
   }
 }
