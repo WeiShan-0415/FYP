@@ -1,7 +1,249 @@
-#root {
-  max-width: 1280px;
+/* App shell */
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #f3f4f6;
+}
+.appShell {
+  max-width: 430px;
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f3f4f6; /* gray-100 */
+}
+
+.header {
+  height: 300px;
+  background: #0f172a url('/background.png') center/cover no-repeat;
+  margin : 0 !important;
+}
+/* .statusBar {
+  height: 24px;
+} */
+.heroContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  margin-top: 230px;
+}
+.greeting {
+  color: #fff;
+  font-size: 1.4rem;
+  margin: 0;
+}
+.avatarBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Main cards */
+.homeCards {
+  margin-top: -28px; /* pull over the rounded hero */
+  padding: 0 0px 90px; /* leave space for tab bar */
+}
+.homeTitle {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-radius: 16px 16px 0 0;
+  padding: 12px 16px;
+  margin: 0;
+  font-weight: 700;
+  font-size: 30px;
+  color:#0f172a;
+}
+.menuCard {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 44px 1fr 18px;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  background: #fff;
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.menuCard:first-of-type {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
+}
+.menuCard:disabled {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.Icon {
+  object-fit: contain;
+}
+
+.card {
+  margin-top: 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.card.error { background: #fee2e2; border-color: #ef4444; }
+.cardTitle { margin: 0 0 8px 0; }
+.codeBlock {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+/* Bottom tab bar */
+.tabBar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  max-width: 430px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  padding: 8px 12px;
+  background: #0f172a; /* slate-900 */
+  color: #fff;
+  box-shadow: 0 -6px 16px rgba(0,0,0,0.15);
+}
+.tabBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* gap: 2px; */
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.12);
+  border: none;
+  color: #fff;
+  margin: 2px;
+}
+.tabActive { background: rgba(255,255,255,0.22); }
+.tabLabel { font-size: 0.75rem; }
+
+@media (min-width: 480px) {
+  .appShell { max-width: 430px; }
+  .tabBar { max-width: 430px; }
+}
+/* Mobile-first UI for Veramo demo */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.header {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.title {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.subtitle {
+  color: #6b7280; /* gray-500 */
+  margin: 6px 0 0 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  color: white;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 6px 16px rgba(29, 78, 216, 0.35);
+}
+.primaryButton:disabled {
+  opacity: 0.7;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.card.error {
+  border-color: #ef4444; /* red-500 */
+  background: #fee2e2; /* red-100 */
+}
+
+.cardTitle {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+}
+
+.codeBlock {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.hint {
+  color: #6b7280; /* gray-500 */
+  text-align: center;
+}
+
+.footer {
+  margin-top: 24px;
+  text-align: center;
+  color: #9ca3af; /* gray-400 */
+}
+
+/* Larger screens: slightly widen content */
+@media (min-width: 768px) {
+  .container {
+    padding: 24px;
+  }
+  .title {
+    font-size: 1.8rem;
+  }
+}
+#root {
+  max-width: 430px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   text-align: center;
 }
 
