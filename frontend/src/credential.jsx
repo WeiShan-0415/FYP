@@ -34,7 +34,7 @@ export default function Credential() {
       <main className="homeCards">
         <div className="titleWithBadge">
           <h5 className="credentialTitle">Total</h5>
-          <span className="totalBadge">5</span>
+          <span className="totalBadge">4</span>
         </div>
         <div className="credentialCard">
           <div className="cardIcon">🚗</div>

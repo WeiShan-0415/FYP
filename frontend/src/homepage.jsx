@@ -49,7 +49,7 @@ export default function HomePage() {
             />
         </button>
 
-        <button className="menuCard" onClick={() => navigate('/credential')}>
+        <button className="menuCard center" onClick={() => navigate('/credential')}>
           <img
               src='/credential.png'
               alt="Credential"
