@@ -1,8 +1,10 @@
 // HomePage.jsx
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 
 export default function HomePage() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [didResult, setDidResult] = useState(null)
   const [error, setError] = useState(null)
@@ -27,7 +29,6 @@ export default function HomePage() {
     <div className="appShell">
       {/* Top hero header */}
       <div className="header">
-        <div className="statusBar" />
         <div className="heroContent">
           <h2 className="greeting">Hello Foo !</h2>
           <button className="avatarBtn" aria-label="Profile">
@@ -48,7 +49,7 @@ export default function HomePage() {
             />
         </button>
 
-        <button className="menuCard" disabled>
+        <button className="menuCard" onClick={() => navigate('/credential')}>
           <img
               src='/credential.png'
               alt="Credential"

@@ -20,9 +20,6 @@ body {
   background: #0f172a url('/background.png') center/cover no-repeat;
   margin : 0 !important;
 }
-/* .statusBar {
-  height: 24px;
-} */
 .heroContent {
   display: flex;
   justify-content: space-between;
@@ -44,11 +41,41 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+}
+
+.credentialContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  padding-top: 12px;
+}
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 8px;
+}
+.backBtn span:first-child {
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+.pageTitle {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
 }
 
 /* Main cards */
 .homeCards {
-  margin-top: -28px; /* pull over the rounded hero */
+  margin-top: -25px; /* pull over the rounded hero */
   padding: 0 0px 90px; /* leave space for tab bar */
 }
 .homeTitle {
@@ -81,6 +108,12 @@ body {
   align-items: center;
   padding: 24px 16px;
 }
+.menuCard:nth-of-type(2) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
+}
 .menuCard:disabled {
   display: flex;
   flex-direction: column;
@@ -91,6 +124,10 @@ body {
 }
 
 .Icon {
+  object-fit: contain;
+}
+
+.circle {
   object-fit: contain;
 }
 
@@ -143,6 +180,50 @@ body {
 }
 .tabActive { background: rgba(255,255,255,0.22); }
 .tabLabel { font-size: 0.75rem; }
+
+/* Circle badge with text overlay */
+.circleContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+  width: 190px;
+  height: 190px;
+}
+.circle {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.circleText {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+}
+.circleNumber {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.circleLabel {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.credentialTitle {
+  text-align: left;
+  padding: 10px;
+  margin: 0;
+  font-weight: 700;
+  font-size: 15px;
+  color:#0f172a;
+}
 
 @media (min-width: 480px) {
   .appShell { max-width: 430px; }
@@ -281,4 +362,79 @@ body {
 
 .read-the-docs {
   color: #888;
+}
+/* Credential Cards */
+.titleWithBadge {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+.totalBadge {
+  background: #4C7380;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 24px;
+  text-align: center;
+}
+.credentialCard {
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  background: #f0f4f8;
+  border: 1px solid #e0e7f1;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+.cardIcon {
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: #fff;
+  border-radius: 10px;
+}
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cardName {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+.cardIssued {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+.cardStatus {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.cardStatus.active {
+  color: #059669;
+  background: #ecfdf5;
+}
+.cardStatus.expiring {
+  color: #d97706;
+  background: #fef3c7;
 }
