@@ -16,7 +16,7 @@ export default function TabBar() {
         <span role="img" aria-label="credential">📜</span>
         <span className="tabLabel">VC</span>
       </button>
-      <button className="tabBtn">
+      <button className={`tabBtn ${isActive('/didpage') ? 'tabActive' : ''}`} onClick={() => navigate('/didpage')}>
         <span role="img" aria-label="key">🔑</span>
         <span className="tabLabel">DID</span>
       </button>
