@@ -41,7 +41,7 @@ export default function HomePage() {
       <main className="homeCards">
         <h3 className="homeTitle">Home</h3>
 
-        <button className="menuCard" onClick={createDid} disabled={loading}>
+        <button className="menuCard" onClick={() => navigate('/didpage')}>
            <img
               src='/DID.png'
               alt="DID"

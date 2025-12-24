@@ -12,7 +12,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f3f4f6; /* gray-100 */
+  background: #fff; /* gray-100 */
 }
 
 .header {
@@ -78,8 +78,16 @@ body {
   margin-top: -25px; 
   padding: 0 0px 90px; 
   background: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  /* border: 1px solid #e5e7eb; */
+  /* box-shadow: 0 2px 8px rgba(0,0,0,0.06); */
+  border-radius: 16px 16px 0 0;
+}
+.tallCards {
+  margin: -200px 0px 0px 0; 
+  padding: 0 0px 90px; 
+  background: #fff;
+  /* border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); */
   border-radius: 16px 16px 0 0;
 }
 .homeTitle {
@@ -434,3 +442,112 @@ body {
   color: #d97706;
   background: #fef3c7;
 }
+
+/* DID Page Styles */
+
+.didCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.didHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 5px;
+  padding-bottom: 10px;
+}
+
+.didIcon {
+  font-size: 48px;
+}
+
+.didTitle {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.didLabel {
+  margin: 0px 30px 0px 30px;
+  font-size: 11px;
+  color: #94a3b8;
+  word-break: break-all;
+  text-align: left;
+}
+
+.didInfoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #D8E4E8;
+  border-radius: 12px;
+  margin: 10px 25px;
+}
+
+.didInfoItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  
+}
+
+.didInfoIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.didInfoContent {
+  display: flex;
+  gap: 10px;
+}
+
+.didInfoLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.statusBadge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.buttonContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+  width: 75%;
+  background-color: white;
+}
+.button {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.buttonText {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+

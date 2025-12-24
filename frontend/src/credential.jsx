@@ -1,4 +1,3 @@
-// Credential.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
@@ -37,7 +36,12 @@ export default function Credential() {
           <span className="totalBadge">4</span>
         </div>
         <div className="credentialCard">
-          <div className="cardIcon">🚗</div>
+          <div className="cardIcon">
+            <img
+                  src='/car.png'
+                  alt="Car"
+                />
+          </div>
           <div className="cardContent">
             <h4 className="cardName">Driver License</h4>
             <p className="cardIssued">Issued: Jan 2023</p>
@@ -46,7 +50,12 @@ export default function Credential() {
         </div>
 
         <div className="credentialCard">
-          <div className="cardIcon">🎓</div>
+          <div className="cardIcon">
+            <img
+                  src='/degree.png'
+                  alt="Degree"
+                />
+          </div>
           <div className="cardContent">
             <h4 className="cardName">University Degree</h4>
             <p className="cardIssued">Issued: Jan 2023</p>
@@ -55,7 +64,12 @@ export default function Credential() {
         </div>
 
         <div className="credentialCard">
-          <div className="cardIcon">🛂</div>
+          <div className="cardIcon">
+            <img
+                  src='/passport.png'
+                  alt="Passport"
+                />
+          </div>
           <div className="cardContent">
             <h4 className="cardName">Passport</h4>
             <p className="cardIssued">Issued: Jan 2023</p>
@@ -64,7 +78,12 @@ export default function Credential() {
         </div>
 
         <div className="credentialCard">
-          <div className="cardIcon">👨‍🍳</div>
+          <div className="cardIcon">
+            <img
+                  src='/cooking.png'
+                  alt="Cooking Certificate"
+                />
+          </div>
           <div className="cardContent">
             <h4 className="cardName">Cooking Certificate</h4>
             <p className="cardIssued">Issued: Jan 2023</p>
