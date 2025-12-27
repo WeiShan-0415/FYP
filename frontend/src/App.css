@@ -200,8 +200,8 @@ body {
   height: 210px;
 }
 .circle {
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 .circleText {
@@ -531,7 +531,7 @@ body {
   justify-content: center;
   align-items: center;
   margin: 10px auto;
-  width: 75%;
+  width: 80%;
   background-color: white;
 }
 .button {
@@ -541,7 +541,7 @@ body {
 }
 .buttonText {
   position: absolute;
-  top: 45%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
