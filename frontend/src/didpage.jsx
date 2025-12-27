@@ -14,7 +14,7 @@ export default function DidPage() {
             <span>Back</span>
           </button>
           <h2 className="pageTitle">My DID</h2>
-          <button className="avatarBtn" aria-label="Profile">
+          <button className="avatarBtn" aria-label="Profile" onClick={() => navigate('/profile')}>
             <span role="img" aria-label="user">👤</span>
           </button>
         </div>

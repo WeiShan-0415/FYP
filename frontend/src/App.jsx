@@ -6,6 +6,7 @@ import TabBar from './TabBar.jsx'
 import Credential from './credential.jsx'
 import DidPage from './didpage.jsx'
 import Verification from './verification.jsx'
+import Profile from './profile.jsx'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/credential" element={<Credential />} />
         <Route path="/didpage" element={<DidPage />} />
         <Route path="/verification" element={<Verification />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       <TabBar />
     </>

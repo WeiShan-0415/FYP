@@ -14,7 +14,7 @@ export default function Credential() {
             <span>Back</span>
           </button>
           <h2 className="pageTitle">Credentials</h2>
-          <button className="avatarBtn" aria-label="Profile">
+          <button className="avatarBtn" aria-label="Profile" onClick={() => navigate('/profile')}>
             <span role="img" aria-label="user">👤</span>
           </button>
         </div>

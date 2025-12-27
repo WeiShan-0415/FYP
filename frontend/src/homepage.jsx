@@ -31,7 +31,7 @@ export default function HomePage() {
       <div className="header">
         <div className="heroContent">
           <h2 className="greeting">Hello Foo !</h2>
-          <button className="avatarBtn" aria-label="Profile">
+          <button className="avatarBtn" aria-label="Profile" onClick={() => navigate('/profile')}>
             <span role="img" aria-label="user">👤</span>
           </button>
         </div>
