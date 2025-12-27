@@ -57,7 +57,7 @@ export default function HomePage() {
             />
         </button>
 
-        <button className="menuCard" disabled>
+        <button className="menuCard center" onClick={() => navigate('/verification')}>
           <img
               src='/verification.png'
               alt="Verification"

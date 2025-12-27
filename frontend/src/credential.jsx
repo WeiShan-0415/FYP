@@ -25,7 +25,7 @@ export default function Credential() {
             className="circle"
           />
           <div className="circleText">
-            <div className="circleNumber">5</div>
+            <div className="circleNumber">4</div>
             <div className="circleLabel">active<br/>credentials</div>
           </div>
         </div>
