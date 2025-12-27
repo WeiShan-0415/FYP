@@ -88,7 +88,7 @@ export default function Profile() {
                 />
               </span>
               <div className="didInfoContent">
-                <span className="didInfoLabel" style={{marginTop: "5px"}}>DID Management</span>
+                <span className="didInfoLabel" style={{marginTop: "8px"}}>DID Management</span>
               </div>
             </button>
 
@@ -100,7 +100,7 @@ export default function Profile() {
                 />
               </span>
               <div className="didInfoContent">
-                <span className="didInfoLabel" style={{marginTop: "5px"}}>Help</span>
+                <span className="didInfoLabel" style={{marginTop: "7px"}}>Help</span>
               </div>
             </button>
           </div>
