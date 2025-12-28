@@ -9,6 +9,7 @@ import Verification from './verification.jsx'
 import Profile from './profile.jsx'
 import ShareDid from './sharedid.jsx'
 import PostVSuccess from './PostVSucess.jsx'
+import PostVFail from './postVFail.jsx'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/sharedid" element={<ShareDid />} />
         <Route path="/postvsuccess" element={<PostVSuccess />} />
+        <Route path="/postvfail" element={<PostVFail />} />
       </Routes>
       <TabBar />
     </>

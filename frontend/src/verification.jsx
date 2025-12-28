@@ -18,7 +18,7 @@ export default function Verification() {
             <span role="img" aria-label="user">👤</span>
           </button>
         </div>
-        <div className="circleContainer">
+        <div className="circleContainer" onClick={() => navigate('/postvfail')}>
           <img
             src='/verificationcircle.png'
             alt="Verification Circle"
