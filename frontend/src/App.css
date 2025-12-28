@@ -663,3 +663,31 @@ body {
   margin-top:15px;
 }
 
+.VerifySuccess {
+  position: relative;
+  width:200px;
+  height:200px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 12px;
+  margin: 50px 25px 50px 25px;
+}
+
+.VerifySuccessImg {
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+
+}
+
+.VerifyText {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+}
+
+
+

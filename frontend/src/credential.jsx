@@ -20,9 +20,9 @@ export default function Credential() {
         </div>
         <div className="circleContainer">
           <img
-            src='/credentialcircle.png'
+            src='/circle.png'
             alt="Credential Circle"
-            className="circle"
+            className="VerifySuccessImg"
           />
           <div className="circleText">
             <div className="circleNumber">4</div>
