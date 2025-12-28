@@ -553,6 +553,7 @@ body {
 
 .didTitle {
   margin: 0;
+  width:500px;
   font-size: 30px;
   font-weight: 700;
   color: #0f172a;
@@ -687,6 +688,25 @@ body {
   transform: translate(-50%, -50%);
   text-align: center;
   color: #fff;
+}
+
+.credentialDetails {
+  width:200px;
+  height:200px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background: #EFEFEF;
+  border-radius: 12px;
+  margin: 10px 25px 10px 10px;
+}
+
+.credentialDetailsCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
 }
 
 

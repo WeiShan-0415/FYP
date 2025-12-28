@@ -56,7 +56,7 @@ export default function Credential() {
                   alt="Degree"
                 />
           </div>
-          <div className="cardContent">
+          <div className="cardContent" onClick={() => navigate('/credentialdetails')}>
             <h4 className="cardName">University Degree</h4>
             <p className="cardIssued">Issued: Jan 2023</p>
           </div>

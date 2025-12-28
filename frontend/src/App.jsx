@@ -10,6 +10,7 @@ import Profile from './profile.jsx'
 import ShareDid from './sharedid.jsx'
 import PostVSuccess from './PostVSucess.jsx'
 import PostVFail from './postVFail.jsx'
+import CredentialDetails from './credentialDetails.jsx'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/sharedid" element={<ShareDid />} />
         <Route path="/postvsuccess" element={<PostVSuccess />} />
         <Route path="/postvfail" element={<PostVFail />} />
+        <Route path="/credentialdetails" element={<CredentialDetails />} />
       </Routes>
       <TabBar />
     </>
