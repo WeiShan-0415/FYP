@@ -11,6 +11,7 @@ import ShareDid from './sharedid.jsx'
 import PostVSuccess from './PostVSucess.jsx'
 import PostVFail from './postVFail.jsx'
 import CredentialDetails from './credentialDetails.jsx'
+import VerificationManual from './verificationManual.jsx'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/postvsuccess" element={<PostVSuccess />} />
         <Route path="/postvfail" element={<PostVFail />} />
         <Route path="/credentialdetails" element={<CredentialDetails />} />
+        <Route path="/verificationmanual" element={<VerificationManual />} />
       </Routes>
       <TabBar />
     </>

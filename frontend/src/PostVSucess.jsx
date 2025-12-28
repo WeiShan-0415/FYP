@@ -9,7 +9,7 @@ export default function PostVSuccess() {
       {/* Top header */}
       <div className="header">
         <div className="credentialContent">
-          <button className="backBtn" onClick={() => navigate('/')} aria-label="Back">
+          <button className="backBtn" onClick={() => navigate('/verification')} aria-label="Back">
             <span>‹</span>
             <span>Back</span>
           </button>

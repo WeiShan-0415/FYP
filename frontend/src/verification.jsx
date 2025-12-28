@@ -33,27 +33,27 @@ export default function Verification() {
         <div className="titleWithBadge">
           <h5 className="credentialTitle">Method</h5>
         </div>
-        <div className="credentialCard"style={{gap: "20px"}}>
+        <div className="credentialCard"style={{gap: "20px"}} onClick={() => navigate('/postvsuccess')} >
           <div className="cardIcon">
             <img
                   src='/qrcode.png'
                   alt="QR Code"
                 />
           </div>
-          <div className="cardContent"style={{textAlign: "Left"}} onClick={() => navigate('/postvsuccess')}>
+          <div className="cardContent"style={{textAlign: "Left"}} >
             <h4 className="cardName">QR Code Scan</h4>
             <p className="cardIssued">Use Camera to scan</p>
           </div>
         </div>
 
-        <div className="credentialCard"style={{gap: "20px"}}>
+        <div className="credentialCard"style={{gap: "20px"}} onClick={() => navigate('/verificationmanual')}>
           <div className="cardIcon">
             <img
                   src='/keyboard.png'
                   alt="keyboard"
                 />
           </div>
-          <div className="cardContent" style={{textAlign: "Left"}}>
+          <div className="cardContent" style={{textAlign: "Left"}} >
             <h4 className="cardName">Manual Entry</h4>
             <p className="cardIssued">Enter Credential ID</p>
           </div>
