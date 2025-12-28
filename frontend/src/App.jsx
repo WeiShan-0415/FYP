@@ -7,6 +7,7 @@ import Credential from './credential.jsx'
 import DidPage from './didpage.jsx'
 import Verification from './verification.jsx'
 import Profile from './profile.jsx'
+import ShareDid from './sharedid.jsx'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/didpage" element={<DidPage />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/sharedid" element={<ShareDid />} />
       </Routes>
       <TabBar />
     </>

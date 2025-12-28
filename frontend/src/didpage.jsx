@@ -85,7 +85,7 @@ export default function DidPage() {
             </div>
           </div>
 
-          <button className="buttonContainer">
+          <button className="buttonContainer" onClick={() => navigate('/sharedid')}>
             <img className="button" src="/button.png" alt="Share Icon" />
             <span className="buttonText">Share My DID</span>
           </button>
