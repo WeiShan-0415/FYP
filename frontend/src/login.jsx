@@ -8,7 +8,7 @@ export default function Login() {
     if (typeof window.ethereum !== 'undefined') {
       try {
         // await window.ethereum.request({ method: 'eth_requestAccounts' });
-        navigate('/homepage');
+        navigate("/homepage");
       } catch (error) {
         console.error('MetaMask connection failed:', error);
       }
