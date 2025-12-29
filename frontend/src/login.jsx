@@ -35,8 +35,14 @@ export default function Login() {
         </p>
         
         <button className="metamaskBtn" onClick={handleMetaMaskLogin}>
-          <span className="metamaskIcon">🦊</span>
-          <span>Continue with MetaMask</span>
+          <span className="metamaskIcon">
+            <img
+              src='/metamask.png'
+              alt="MetaMask Icon"
+              className="metamaskImage"
+            />
+          </span>
+          <span className="metamaskText">Continue with MetaMask</span>
         </button>
       </div>
     </div>
