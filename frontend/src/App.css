@@ -407,6 +407,17 @@ body {
   padding: 14px 16px;
   margin: 10px;
 }
+.historyCard {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 14px;
+  background: #D8E4E8;
+  border: 1px solid #e0e7f1;
+  border-radius: 20px;
+  padding: 14px 16px;
+  margin: 10px;
+}
 .cardIcon {
   font-size: 28px;
   display: flex;
@@ -444,14 +455,23 @@ body {
   padding: 4px 8px;
   border-radius: 6px;
   white-space: nowrap;
+  height:18px;
 }
 .cardStatus.active {
   color: #059669;
   background: #ecfdf5;
+  width:44px;
 }
 .cardStatus.expiring {
   color: #d97706;
   background: #fef3c7;
+  width:86px;
+}
+
+.cardStatus.revoke {
+  color: red;
+  background: #fef3c7;
+  width:44px;
 }
 
 /* DID Page Styles */

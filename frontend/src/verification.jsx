@@ -59,7 +59,7 @@ export default function Verification() {
           </div>
           
         </div>
-        <button className="buttonContainer" style={{marginTop: "90px",width: "90%"}}>
+        <button className="buttonContainer" style={{marginTop: "90px",width: "90%"}} onClick={() => navigate('/history')}>
             <img className="button" src="/button.png" alt="Share Icon" />
             <span className="buttonText">Verification History</span>
           </button>

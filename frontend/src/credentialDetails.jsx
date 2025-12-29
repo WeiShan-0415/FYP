@@ -43,6 +43,13 @@ export default function credentialDetails() {
 
         <div className="credentialCard"style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
+            <h4 className="cardName">Credential ID </h4>
+            <p className="cardIssued">did:key:z6MkjH6civFfkrzmKe8Bi....37hFxgniL29ra1G</p>
+          </div>
+        </div>
+
+        <div className="credentialCard"style={{marginTop: "0px"}}>
+          <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Credential Type </h4>
             <p className="cardIssued">University Certification</p>
           </div>
