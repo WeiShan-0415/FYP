@@ -13,7 +13,7 @@ export default function Login() {
         console.error('MetaMask connection failed:', error);
       }
     } else {
-      alert('Please install MetaMask to continue');
+      // alert('Please install MetaMask to continue');
     }
   };
 
