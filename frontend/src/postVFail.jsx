@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import TabBar from './TabBar';
 
 export default function PostVFail() {
   const navigate = useNavigate();
@@ -39,9 +40,8 @@ export default function PostVFail() {
           <h3 className="didTitle">Please try again.</h3>
           </div>
           </div>
-         
-        
       </main>
+      <TabBar />
     </div>
   );
 }

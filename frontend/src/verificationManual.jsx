@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import TabBar from './TabBar';
+
 
 export default function VerificationManual() {
   const [credentialId, setCredentialId] = useState('');
@@ -45,6 +47,7 @@ export default function VerificationManual() {
           />
         </div>
       </main>
+      <TabBar />
     </div>
   );
 }

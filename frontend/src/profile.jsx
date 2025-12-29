@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import TabBar from './TabBar';
+
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ export default function Profile() {
       {/* Top header */}
       <div className="header">
         <div className="credentialContent">
-          <button className="backBtn" onClick={() => navigate('/')} aria-label="Back">
+          <button className="backBtn" onClick={() => navigate('/homepage')} aria-label="Back">
             <span>‹</span>
             <span>Back</span>
           </button>
@@ -110,8 +112,8 @@ export default function Profile() {
               </div>
             </button>
         </div>
-      
       </main>
+      <TabBar />
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import TabBar from './TabBar';
+
 
 export default function PostVSuccess() {
   const navigate = useNavigate();
@@ -62,8 +64,8 @@ export default function PostVSuccess() {
             <p className="cardIssued">Heriot-Watt Univeristy</p>
           </div>
         </div>
-        
       </main>
+      <TabBar />
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import TabBar from './TabBar';
+
 
 export default function History() {
   const navigate = useNavigate();
@@ -51,8 +53,8 @@ export default function History() {
           </div>
           <span className="cardStatus active">Success</span>
         </div>
-
       </main>
+      <TabBar />
     </div>
   );
 }

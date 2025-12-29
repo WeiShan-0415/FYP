@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import TabBar from './TabBar';
 
 export default function Credential() {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function Credential() {
       {/* Top header */}
       <div className="header">
         <div className="credentialContent">
-          <button className="backBtn" onClick={() => navigate('/')} aria-label="Back">
+          <button className="backBtn" onClick={() => navigate('/homepage')} aria-label="Back">
             <span>‹</span>
             <span>Back</span>
           </button>
@@ -91,6 +92,7 @@ export default function Credential() {
           <span className="cardStatus active">Active</span>
         </div>
       </main>
+      <TabBar />
     </div>
   );
 }

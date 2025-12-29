@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import TabBar from './TabBar';
+
 
 export default function credentialDetails() {
   const navigate = useNavigate();
@@ -67,9 +69,8 @@ export default function credentialDetails() {
             <p className="cardIssued">Heriot-Watt Univeristy</p>
           </div>
         </div>
-
-        
       </main>
+      <TabBar />
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import TabBar from './TabBar';
+
 
 export default function ShareDid() {
   const navigate = useNavigate();
@@ -49,6 +51,7 @@ export default function ShareDid() {
         </div>
         </div>
       </main>
+      <TabBar />
     </div>
   );
 }
