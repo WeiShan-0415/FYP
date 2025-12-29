@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Montagu+Slab:wght@500;600;700&display=swap');
 /* App shell */
 
 body {
@@ -777,5 +778,91 @@ body {
   flex-direction: column;
 }
 
+/* Login Page Styles */
+.loginContainer {
+  max-width: 430px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 105vh;
+  height:100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #0f172a url('/background.png') center/cover no-repeat;
+  padding: 20px;
+}
 
+.loginContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 30px;
+  width: 100%;
+}
 
+.logoCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.logoIcon {
+  font-size: 40px;
+}
+
+.loginTitle {
+  font-size: 32px;
+  font-weight: 700;
+  font-family: 'Montagu Slab', serif;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.loginSubtitle {
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'Montagu Slab', serif;
+  color: #01FFE1;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.metamaskBtn {
+  width: 85%;
+  max-width: 320px;
+  padding: 16px 24px;
+  background: #fff;
+  border: none;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metamaskBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.metamaskBtn:active {
+  transform: translateY(0);
+}
+
+.metamaskIcon {
+  font-size: 24px;
+}

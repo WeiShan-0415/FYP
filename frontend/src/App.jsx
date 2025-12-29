@@ -2,7 +2,6 @@
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import HomePage from './homepage.jsx'
-import TabBar from './TabBar.jsx'
 import Credential from './credential.jsx'
 import DidPage from './didpage.jsx'
 import Verification from './verification.jsx'
@@ -14,12 +13,14 @@ import CredentialDetails from './credentialDetails.jsx'
 import VerificationManual from './verificationManual.jsx'
 import History from './history.jsx'
 import ProfileDetails from './profileDetail.jsx'
+import Login from './login.jsx'
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/homepage" element={<HomePage />} />
         <Route path="/credential" element={<Credential />} />
         <Route path="/didpage" element={<DidPage />} />
         <Route path="/verification" element={<Verification />} />
@@ -32,7 +33,6 @@ function App() {
         <Route path="/history" element={<History />} />
         <Route path="/profiledetails" element={<ProfileDetails />} />
       </Routes>
-      <TabBar />
     </>
   )
 }
