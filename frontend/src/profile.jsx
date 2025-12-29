@@ -56,7 +56,7 @@ export default function Profile() {
         <div className="profileDivider"></div>
         <div className="didCard">
         <div className="didInfoSection">
-            <button className="profileButton">
+            <button className="profileButton" onClick={() => navigate('/profiledetails')}>
               <span className="didInfoIcon" style={{marginTop: "10px"}}>
                 <img
                   src='/profile.png'

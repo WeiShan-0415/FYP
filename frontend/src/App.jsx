@@ -13,6 +13,7 @@ import PostVFail from './postVFail.jsx'
 import CredentialDetails from './credentialDetails.jsx'
 import VerificationManual from './verificationManual.jsx'
 import History from './history.jsx'
+import ProfileDetails from './profileDetail.jsx'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/credentialdetails" element={<CredentialDetails />} />
         <Route path="/verificationmanual" element={<VerificationManual />} />
         <Route path="/history" element={<History />} />
+        <Route path="/profiledetails" element={<ProfileDetails />} />
       </Routes>
       <TabBar />
     </>
