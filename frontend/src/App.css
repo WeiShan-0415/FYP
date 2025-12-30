@@ -6,6 +6,7 @@ body {
   margin: 0;
   padding: 0;
   background: #f3f4f6;
+  max-width: 430px;
 }
 .appShell {
   max-width: 430px;
@@ -91,8 +92,8 @@ body {
   border-radius: 16px 16px 0 0;
 }
 .tallCards {
-  margin: -200px 0px 0px 0; 
-  padding: 0 0px 90px; 
+  margin-Top: -200px; 
+  padding:0 0px 90px; 
   background: #fff;
   /* border: 1px solid #e5e7eb;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06); */
@@ -171,13 +172,13 @@ body {
   left: 50%;
   transform: translateX(-50%);
   bottom: 0;
-  max-width: 430px;
+  max-width: 400px;
   width: 100%;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2px;
-  padding: 8px 12px;
-  background: #0f172a; /* slate-900 */
+  padding: 8px 8px;
+  background: #103B62;  
   color: #fff;
   box-shadow: 0 -6px 16px rgba(0,0,0,0.15);
 }
@@ -189,12 +190,14 @@ body {
   /* gap: 2px; */
   height: 48px;
   border-radius: 12px;
-  background: rgba(255,255,255,0.12);
+  background: white;
   border: none;
-  color: #fff;
+  color: #204160;
   margin: 2px;
+  padding: 6px 10px;
 }
-.tabActive { background: rgba(255,255,255,0.22); }
+.tabActive { background: #5280AB; 
+  color: white; }
 .tabLabel { font-size: 0.75rem; }
 
 /* Circle badge with text overlay */
@@ -584,7 +587,7 @@ body {
 
 .didTitle {
   margin: 0;
-  width:500px;
+  width: 390px;;
   font-size: 30px;
   font-weight: 700;
   color: #0f172a;

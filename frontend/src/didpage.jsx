@@ -21,7 +21,7 @@ export default function DidPage() {
           </button>
         </div>
       </div>
-      <main className="tallCards">
+       <main className="tallCards">
         <div className="didCard">
           <div className="didHeader">
             <div className="didIcon">
@@ -32,9 +32,10 @@ export default function DidPage() {
             </div>
             <h3 className="didTitle">Your Decentralised ID</h3>
           </div>
+          <div>
             <p className="didLabel">did:key:z5MEj9RJqH6cVLvzH5RcVr1zmNzrzi7T2rAVAkKAiW29Xztn2zit2rsZo10</p>
             <p className="didLabel">Public Key : 47aff725733....36e5bb</p>
-
+          </div>
 
           <div className="didInfoSection">
             <div className="didInfoItem">
@@ -86,24 +87,13 @@ export default function DidPage() {
               </div>
             </div>
           </div>
-
           <button className="buttonContainer" onClick={() => navigate('/sharedid')}>
             <img className="button" src="/button.png" alt="Share Icon" />
             <span className="buttonText">Share My DID</span>
           </button>
         </div>
       </main>
-      <div style={{
-        position: 'fixed',
-        bottom: 0,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '100%',
-        maxWidth: '430px',
-        zIndex: 100
-      }}>
-        <TabBar />
-      </div>
+    <TabBar />
     </div>
   );
 }
