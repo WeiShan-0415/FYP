@@ -5,13 +5,37 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleMetaMaskLogin = async () => {
-      try {
-        // await window.ethereum.request({ method: 'eth_requestAccounts' });
-        navigate("/homepage");
-      } catch (error) {
-        console.error('MetaMask connection failed:', error);
+    try {
+      // 1. Check if MetaMask is installed
+      if (!window.ethereum) {
+        alert("MetaMask is not installed");
+        return;
       }
+
+      // 2. Request wallet connection
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+
+      // 3. Get the first account
+      const walletAddress = accounts[0];
+      console.log("Connected wallet:", walletAddress);
+
+      // 4. Store wallet address (example)
+      localStorage.setItem("walletAddress", walletAddress);
+
+      // 5. Navigate only after success
+      navigate("/homepage");
+    } catch (error) {
+      console.error("MetaMask connection failed:", error);
+
+      // Optional: handle user rejection
+      if (error.code === 4001) {
+        alert("User rejected MetaMask connection");
+      }
+    }
   };
+
 
   return (
     <div className="loginContainer">
