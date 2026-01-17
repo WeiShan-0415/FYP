@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
@@ -8,7 +8,14 @@ export default function ProfileDetails() {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState(null);
   const [fullName] = useState('FOO WEI SHAN');
-  const [metamaskId] = useState('0x4f70239A8107...8424730457D45');
+  const [metamaskId, setMetamaskId] = useState(() => localStorage.getItem('walletAddress') || '');
+
+  useEffect(() => {
+    const storedAddress = localStorage.getItem('walletAddress');
+    if (storedAddress) {
+      setMetamaskId(storedAddress);
+    }
+  }, []);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -72,7 +79,7 @@ export default function ProfileDetails() {
             type="text"
             className="credentialInput"
             style={{color: "grey"}}
-            value={metamaskId}
+            value={metamaskId || 'Not connected'}
             readOnly
           />
         </div>
