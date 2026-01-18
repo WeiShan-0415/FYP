@@ -58,7 +58,7 @@ export default function DidPage() {
           </div>
           <div>
             <p className="didLabel"><span style={{color:"black"}}>DID:</span> {userDID ? `${userDID.slice(0, 45)}...${userDID.slice(-4)}` : 'Loading...'}</p>
-            <p className="didLabel"><span style={{color:"black"}}>Public Key:</span> {walletAddress ? `${walletAddress}` : 'Loading...'}</p>
+            <p className="didLabel"><span style={{color:"black"}}>Public Key:</span> {walletAddress ? `${walletAddress.slice(0, 40)}...${walletAddress.slice(-4)}` : 'Loading...'}</p>
           </div>
 
           <div className="didInfoSection">
