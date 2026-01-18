@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
@@ -6,6 +6,18 @@ import TabBar from './TabBar';
 
 export default function DidPage() {
   const navigate = useNavigate();
+  const [walletAddress, setWalletAddress] = useState('');
+  const [userDID, setUserDID] = useState('');
+
+  useEffect(() => {
+    // Retrieve from localStorage
+    const wallet = localStorage.getItem('walletAddress');
+    const did = localStorage.getItem('userDID');
+    
+    if (wallet) setWalletAddress(wallet);
+    if (did) setUserDID(did);
+  }, []);
+
   return (
     <div className="appShell">
       {/* Top header */}
@@ -33,8 +45,8 @@ export default function DidPage() {
             <h3 className="didTitle">Your Decentralised ID</h3>
           </div>
           <div>
-            <p className="didLabel">did:key:z5MEj9RJqH6cVLvzH5RcVr1zmNzrzi7T2rAVAkKAiW29Xztn2zit2rsZo10</p>
-            <p className="didLabel">Public Key : 47aff725733....36e5bb</p>
+            <p className="didLabel">{userDID || 'Loading DID...'}</p>
+            <p className="didLabel">Wallet Address: {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Loading...'}</p>
           </div>
 
           <div className="didInfoSection">

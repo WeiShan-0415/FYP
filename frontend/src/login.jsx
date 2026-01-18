@@ -6,25 +6,20 @@ export default function Login() {
 
   const handleMetaMaskLogin = async () => {
     try {
-      // 1. Check if MetaMask is installed
       if (!window.ethereum) {
         alert("MetaMask is not installed");
         return;
       }
 
-      // 2. Request wallet connection
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
 
-      // 3. Get the first account
       const walletAddress = accounts[0];
       console.log("Connected wallet:", walletAddress);
 
-      // 4. Store wallet address
       localStorage.setItem("walletAddress", walletAddress);
 
-      // 5. Check if DID exists for this wallet
       console.log("Checking if DID exists...");
       const checkResponse = await fetch('/api/agent/check-did', {
         method: 'POST',
@@ -38,7 +33,6 @@ export default function Login() {
         console.log("DID already exists:", checkResult.did);
         localStorage.setItem("userDID", checkResult.did);
       } else {
-        // 6. Register DID on blockchain
         console.log("Registering DID on Sepolia blockchain...");
         const registerResponse = await fetch('/api/agent/register-did-onchain', {
           method: 'POST',
@@ -54,7 +48,6 @@ export default function Login() {
         const result = await registerResponse.json();
         console.log("DID registered on blockchain:", result);
         
-        // Store DID
         localStorage.setItem("userDID", result.did);
         
         // Show success message with transaction hash
