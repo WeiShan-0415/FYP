@@ -104,29 +104,51 @@ export default async function handler(req, res) {
     }
 
     if (path === '/api/agent/check-did' && method === 'POST') {
-      const { walletAddress } = req.body
-      
-      if (!walletAddress) {
-        return res.status(400).json({ error: 'walletAddress is required' })
-      }
+        const { walletAddress } = req.body
+        
+        if (!walletAddress) {
+          return res.status(400).json({ error: 'walletAddress is required' })
+        }
 
-      // Check if DID is stored in memory
-      const did = `did:ethr:sepolia:${walletAddress}`
-      const storedDIDs = global.didStore || {}
-      
-      if (storedDIDs[walletAddress]) {
-        return res.status(200).json({ 
-          exists: true, 
-          did: did,
-          identifier: storedDIDs[walletAddress]
-        })
-      } else {
-        return res.status(200).json({ 
-          exists: false, 
-          did: did
-        })
+        const did = `did:ethr:sepolia:${walletAddress}`
+        
+        // 1. Check Local Store First
+        if (global.didStore && global.didStore[walletAddress]) {
+          return res.status(200).json({ 
+            exists: true, 
+            source: 'local_cache',
+            did: did,
+            identifier: global.didStore[walletAddress]
+          })
+        }
+
+        // 2. Fallback: Check the Blockchain (Real Verification)
+        try {
+          const { ethers } = await import('ethers')
+          const rpcUrl = process.env.ETH_RPC_URL || `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+          const provider = new ethers.JsonRpcProvider(rpcUrl)
+          
+          const DID_REGISTRY = '0x03d5003bf0e79c5f5223588f347eba39afbc3818'
+          const abi = ['function identityOwner(address identity) public view returns (address)']
+          const contract = new ethers.Contract(DID_REGISTRY, abi, provider)
+
+          // In ethr-did, if the identityOwner is not 0x0, it's a valid DID
+          const owner = await contract.identityOwner(walletAddress)
+          
+          if (owner !== '0x0000000000000000000000000000000000000000') {
+            return res.status(200).json({
+              exists: true,
+              source: 'blockchain',
+              did: did,
+              owner: owner
+            })
+          }
+        } catch (error) {
+          console.error("On-chain check failed:", error)
+        }
+
+        return res.status(200).json({ exists: false, did: did })
       }
-    }
 
     if (path === '/api/agent/create-did' && method === 'POST')  {
       const { walletAddress } = req.body
@@ -234,7 +256,7 @@ export default async function handler(req, res) {
           keys: [],
           services: [],
           onChain: true,
-          transactionHash: receipt.transactionHash,
+          transactionHash: receipt.Hash,
           blockNumber: receipt.blockNumber
         }
         
@@ -243,7 +265,7 @@ export default async function handler(req, res) {
         return res.status(200).json({
           success: true,
           did: did,
-          transactionHash: receipt.transactionHash,
+          transactionHash: receipt.Hash,
           blockNumber: receipt.blockNumber,
           explorerUrl: `https://sepolia.etherscan.io/tx/${receipt.transactionHash}`
         })
