@@ -45,8 +45,8 @@ export default function DidPage() {
             <h3 className="didTitle">Your Decentralised ID</h3>
           </div>
           <div>
-            <p className="didLabel">{userDID || 'Loading DID...'}</p>
-            <p className="didLabel">Wallet Address: {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Loading...'}</p>
+            <p className="didLabel"><span style={{color:"black"}}>DID:</span> {userDID || 'Loading DID...'}</p>
+            <p className="didLabel"><span style={{color:"black"}}>Wallet Address:</span> {walletAddress ? `${walletAddress}` : 'Loading...'}</p>
           </div>
 
           <div className="didInfoSection">
