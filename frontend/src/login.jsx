@@ -38,21 +38,30 @@ export default function Login() {
         console.log("DID already exists:", checkResult.did);
         localStorage.setItem("userDID", checkResult.did);
       } else {
-        // 6. Create DID if it doesn't exist
-        console.log("Creating new DID...");
-        const createResponse = await fetch('/api/agent/create-did', {
+        // 6. Register DID on blockchain
+        console.log("Registering DID on Sepolia blockchain...");
+        const registerResponse = await fetch('/api/agent/register-did-onchain', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ walletAddress })
         });
 
-        if (!createResponse.ok) {
-          throw new Error('Failed to create DID');
+        if (!registerResponse.ok) {
+          const error = await registerResponse.json();
+          throw new Error(error.error || 'Failed to register DID on blockchain');
         }
 
-        const identifier = await createResponse.json();
-        console.log("DID created:", identifier.did);
-        localStorage.setItem("userDID", identifier.did);
+        const result = await registerResponse.json();
+        console.log("DID registered on blockchain:", result);
+        
+        // Store DID
+        localStorage.setItem("userDID", result.did);
+        
+        // Show success message with transaction hash
+        if (result.transactionHash) {
+          console.log("Transaction hash:", result.transactionHash);
+          alert(`DID created and registered on Sepolia!\nTransaction: ${result.transactionHash}`);
+        }
       }
 
       // 7. Navigate to homepage after DID setup

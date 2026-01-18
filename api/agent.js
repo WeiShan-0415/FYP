@@ -104,66 +104,158 @@ export default async function handler(req, res) {
     }
 
     if (path === '/api/agent/check-did' && method === 'POST') {
-      const agent = await getAgent()
       const { walletAddress } = req.body
       
       if (!walletAddress) {
         return res.status(400).json({ error: 'walletAddress is required' })
       }
 
-      try {
-        const did = `did:ethr:sepolia:${walletAddress}`
-        const identifier = await agent.didManagerGet({ did })
+      // Check if DID is stored in memory
+      const did = `did:ethr:sepolia:${walletAddress}`
+      const storedDIDs = global.didStore || {}
+      
+      if (storedDIDs[walletAddress]) {
         return res.status(200).json({ 
           exists: true, 
-          did: identifier.did,
-          identifier 
+          did: did,
+          identifier: storedDIDs[walletAddress]
         })
-      } catch (error) {
-        // DID not found
+      } else {
         return res.status(200).json({ 
           exists: false, 
-          did: `did:ethr:sepolia:${walletAddress}` 
+          did: did
         })
       }
     }
 
     if (path === '/api/agent/create-did' && method === 'POST')  {
-      const agent = await getAgent()
       const { walletAddress } = req.body
       
       if (!walletAddress) {
         return res.status(400).json({ error: 'walletAddress is required' })
       }
 
-      // Check if DID already exists
-      try {
-        const did = `did:ethr:sepolia:${walletAddress}`
-        const existing = await agent.didManagerGet({ did })
-        return res.status(200).json({ 
-          message: 'DID already exists',
-          identifier: existing 
-        })
-      } catch (error) {
-        // DID doesn't exist, create it
+      // Initialize global DID store if not exists
+      if (!global.didStore) {
+        global.didStore = {}
       }
 
-      // Import the MetaMask address into the key manager
-      // This creates a DID identifier for the existing Ethereum address
-      const identifier = await agent.didManagerImport({
-        did: `did:ethr:sepolia:${walletAddress}`,
+      const did = `did:ethr:sepolia:${walletAddress}`
+      
+      // Check if already exists
+      if (global.didStore[walletAddress]) {
+        return res.status(200).json({ 
+          message: 'DID already exists',
+          did: did,
+          identifier: global.didStore[walletAddress]
+        })
+      }
+
+      // Create DID identifier (no private key needed, just the DID format)
+      const identifier = {
+        did: did,
         provider: 'did:ethr:sepolia',
         controllerKeyId: walletAddress,
-        keys: [{
-          type: 'Secp256k1',
-          kid: walletAddress,
-          publicKeyHex: walletAddress.slice(2), // Remove '0x' prefix
-          kms: 'local'
-        }]
-      })
+        keys: [],
+        services: []
+      }
+
+      // Store in memory
+      global.didStore[walletAddress] = identifier
       
       return res.status(200).json(identifier)
     }
+
+    if (path === '/api/agent/register-did-onchain' && method === 'POST') {
+      const { walletAddress } = req.body
+      
+      if (!walletAddress) {
+        return res.status(400).json({ error: 'walletAddress is required' })
+      }
+
+      if (!process.env.PRIVATE_KEY) {
+        return res.status(500).json({ 
+          error: 'Server private key not configured. Please set PRIVATE_KEY environment variable with Sepolia ETH.' 
+        })
+      }
+
+      try {
+        // Dynamic import ethers
+        const { ethers } = await import('ethers')
+        
+        const rpcUrl = process.env.ETH_RPC_URL || `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+        if (!rpcUrl || rpcUrl.includes('undefined')) {
+          return res.status(500).json({ 
+            error: 'RPC URL not configured. Set ETH_RPC_URL or INFURA_PROJECT_ID.' 
+          })
+        }
+
+        // Connect to Sepolia
+        const provider = new ethers.JsonRpcProvider(rpcUrl)
+        const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
+        
+        // DID Registry contract address and ABI
+        const DID_REGISTRY = '0x03d5003bf0e79c5f5223588f347eba39afbc3818'
+        const DID_REGISTRY_ABI = [
+          'function setAttribute(address identity, bytes32 name, bytes value, uint validity) external',
+          'function owner(address identity) external view returns (address)'
+        ]
+        
+        const didRegistry = new ethers.Contract(DID_REGISTRY, DID_REGISTRY_ABI, wallet)
+        
+        // Set a DID document attribute to register the DID on-chain
+        // This registers that this address controls this DID
+        const name = ethers.encodeBytes32String('did/pub/Secp256k1/veriKey')
+        const value = ethers.toUtf8Bytes(walletAddress) // Store wallet address as the verification key
+        const validity = 86400 * 365 * 10 // 10 years validity
+        
+        console.log(`Registering DID for ${walletAddress} on Sepolia...`)
+        const tx = await didRegistry.setAttribute(
+          walletAddress,
+          name,
+          value,
+          validity
+        )
+        
+        console.log('Transaction sent:', tx.hash)
+        const receipt = await tx.wait()
+        console.log('Transaction confirmed:', receipt.transactionHash)
+        
+        // Store in memory
+        if (!global.didStore) {
+          global.didStore = {}
+        }
+        
+        const did = `did:ethr:sepolia:${walletAddress}`
+        const identifier = {
+          did: did,
+          provider: 'did:ethr:sepolia',
+          controllerKeyId: walletAddress,
+          keys: [],
+          services: [],
+          onChain: true,
+          transactionHash: receipt.transactionHash,
+          blockNumber: receipt.blockNumber
+        }
+        
+        global.didStore[walletAddress] = identifier
+        
+        return res.status(200).json({
+          success: true,
+          did: did,
+          transactionHash: receipt.transactionHash,
+          blockNumber: receipt.blockNumber,
+          explorerUrl: `https://sepolia.etherscan.io/tx/${receipt.transactionHash}`
+        })
+        
+      } catch (error) {
+        console.error('Blockchain registration error:', error)
+        return res.status(500).json({ 
+          error: error.message || 'Failed to register DID on blockchain' 
+        })
+      }
+    }
+
     if (path === '/api/agent/issue-credential' && method === 'POST') {
       const agent = await getAgent()
       const { subjectDID, name, degree } = req.body
