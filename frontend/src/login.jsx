@@ -21,10 +21,41 @@ export default function Login() {
       const walletAddress = accounts[0];
       console.log("Connected wallet:", walletAddress);
 
-      // 4. Store wallet address (example)
+      // 4. Store wallet address
       localStorage.setItem("walletAddress", walletAddress);
 
-      // 5. Navigate only after success
+      // 5. Check if DID exists for this wallet
+      console.log("Checking if DID exists...");
+      const checkResponse = await fetch('/api/agent/check-did', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress })
+      });
+
+      const checkResult = await checkResponse.json();
+
+      if (checkResult.exists) {
+        console.log("DID already exists:", checkResult.did);
+        localStorage.setItem("userDID", checkResult.did);
+      } else {
+        // 6. Create DID if it doesn't exist
+        console.log("Creating new DID...");
+        const createResponse = await fetch('/api/agent/create-did', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ walletAddress })
+        });
+
+        if (!createResponse.ok) {
+          throw new Error('Failed to create DID');
+        }
+
+        const identifier = await createResponse.json();
+        console.log("DID created:", identifier.did);
+        localStorage.setItem("userDID", identifier.did);
+      }
+
+      // 7. Navigate to homepage after DID setup
       navigate("/homepage");
     } catch (error) {
       console.error("MetaMask connection failed:", error);
@@ -32,9 +63,12 @@ export default function Login() {
       // Optional: handle user rejection
       if (error.code === 4001) {
         alert("User rejected MetaMask connection");
+      } else {
+        alert("Failed to setup DID: " + error.message);
       }
     }
   };
+
 
   
 

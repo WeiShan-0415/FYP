@@ -68,13 +68,12 @@ if (process.env.INFURA_PROJECT_ID) {
           defaultProvider: 'did:ethr:sepolia',
           providers: 
           {
-            'did:ethr:sepolia': new KeyDIDProvider(
+            'did:ethr:sepolia': new EthrDIDProvider(
               { 
                 defaultKms: 'local',
                 network: 'sepolia',
                 rpcUrl: process.env.ETH_RPC_URL,
-                chainId: 11155111,
-                privateKeyHex:process.env.PRIVATE_KEY
+                registry: '0x03d5003bf0e79c5f5223588f347eba39afbc3818', // Sepolia DID Registry
               }),
               'did:key': new KeyDIDProvider({ defaultKms: 'local' }),
             },
@@ -104,9 +103,65 @@ export default async function handler(req, res) {
       return res.status(200).json({ message: '✅ Veramo Agent is alive!' })
     }
 
-    if (path === '/api/agent/create-did' && method === 'GET')  {
+    if (path === '/api/agent/check-did' && method === 'POST') {
       const agent = await getAgent()
-      const identifier = await agent.didManagerCreate({ provider: 'did:ethr:sepolia' })
+      const { walletAddress } = req.body
+      
+      if (!walletAddress) {
+        return res.status(400).json({ error: 'walletAddress is required' })
+      }
+
+      try {
+        const did = `did:ethr:sepolia:${walletAddress}`
+        const identifier = await agent.didManagerGet({ did })
+        return res.status(200).json({ 
+          exists: true, 
+          did: identifier.did,
+          identifier 
+        })
+      } catch (error) {
+        // DID not found
+        return res.status(200).json({ 
+          exists: false, 
+          did: `did:ethr:sepolia:${walletAddress}` 
+        })
+      }
+    }
+
+    if (path === '/api/agent/create-did' && method === 'POST')  {
+      const agent = await getAgent()
+      const { walletAddress } = req.body
+      
+      if (!walletAddress) {
+        return res.status(400).json({ error: 'walletAddress is required' })
+      }
+
+      // Check if DID already exists
+      try {
+        const did = `did:ethr:sepolia:${walletAddress}`
+        const existing = await agent.didManagerGet({ did })
+        return res.status(200).json({ 
+          message: 'DID already exists',
+          identifier: existing 
+        })
+      } catch (error) {
+        // DID doesn't exist, create it
+      }
+
+      // Import the MetaMask address into the key manager
+      // This creates a DID identifier for the existing Ethereum address
+      const identifier = await agent.didManagerImport({
+        did: `did:ethr:sepolia:${walletAddress}`,
+        provider: 'did:ethr:sepolia',
+        controllerKeyId: walletAddress,
+        keys: [{
+          type: 'Secp256k1',
+          kid: walletAddress,
+          publicKeyHex: walletAddress.slice(2), // Remove '0x' prefix
+          kms: 'local'
+        }]
+      })
+      
       return res.status(200).json(identifier)
     }
     if (path === '/api/agent/issue-credential' && method === 'POST') {
