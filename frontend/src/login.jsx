@@ -32,6 +32,9 @@ export default function Login() {
       if (checkResult.exists) {
         console.log("DID already exists:", checkResult.did);
         localStorage.setItem("userDID", checkResult.did);
+        if (checkResult.createdAt) {
+          localStorage.setItem("didCreatedAt", checkResult.createdAt);
+        }
       } else {
         console.log("Registering DID on Sepolia blockchain...");
         const registerResponse = await fetch('/api/agent/register-did-onchain', {
@@ -49,6 +52,9 @@ export default function Login() {
         console.log("DID registered on blockchain:", result);
         
         localStorage.setItem("userDID", result.did);
+        if (result.createdAt) {
+          localStorage.setItem("didCreatedAt", result.createdAt);
+        }
         
         // Show success message with transaction hash
         if (result.transactionHash) {

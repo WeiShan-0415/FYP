@@ -100,7 +100,7 @@ export default async function handler(req, res) {
 
   try {
     if (path === '/api/agent/ping' && method === 'GET') {
-      return res.status(200).json({ message: '✅ Veramo Agent is alive!' })
+      return res.status(200).json({ message: 'Veramo Agent is alive!' })
     }
 
     if (path === '/api/agent/check-did' && method === 'POST') {
@@ -118,7 +118,8 @@ export default async function handler(req, res) {
             exists: true, 
             source: 'local_cache',
             did: did,
-            identifier: global.didStore[walletAddress]
+            identifier: global.didStore[walletAddress],
+            createdAt: global.didStore[walletAddress].createdAt
           })
         }
 
@@ -129,18 +130,41 @@ export default async function handler(req, res) {
           const provider = new ethers.JsonRpcProvider(rpcUrl)
           
           const DID_REGISTRY = '0x03d5003bf0e79c5f5223588f347eba39afbc3818'
-          const abi = ['function identityOwner(address identity) public view returns (address)']
+          const abi = [
+            'function identityOwner(address identity) public view returns (address)',
+            'event DIDAttributeChanged(address indexed identity, bytes32 name, bytes value, uint validTo, uint previousChange)'
+          ]
           const contract = new ethers.Contract(DID_REGISTRY, abi, provider)
 
           // In ethr-did, if the identityOwner is not 0x0, it's a valid DID
           const owner = await contract.identityOwner(walletAddress)
           
           if (owner !== '0x0000000000000000000000000000000000000000') {
+            let createdAt = null
+            
+            // Try to get creation date from the first DIDAttributeChanged event
+            try {
+              const currentBlock = await provider.getBlockNumber()
+              const filter = contract.filters.DIDAttributeChanged(walletAddress)
+              // Query last 1 million blocks (adjust as needed for Sepolia)
+              const events = await contract.queryFilter(filter, Math.max(0, currentBlock - 1000000), currentBlock)
+              
+              if (events.length > 0) {
+                // Get the first event (earliest block)
+                const firstEvent = events.sort((a, b) => a.blockNumber - b.blockNumber)[0]
+                const block = await provider.getBlock(firstEvent.blockNumber)
+                createdAt = new Date(block.timestamp * 1000).toISOString()
+              }
+            } catch (eventError) {
+              console.error("Failed to fetch creation date:", eventError)
+            }
+            
             return res.status(200).json({
               exists: true,
               source: 'blockchain',
               did: did,
-              owner: owner
+              owner: owner,
+              createdAt: createdAt
             })
           }
         } catch (error) {
@@ -243,6 +267,10 @@ export default async function handler(req, res) {
         const receipt = await tx.wait()
         console.log('Transaction confirmed:', receipt.transactionHash)
         
+        // Get block timestamp for creation date
+        const block = await provider.getBlock(receipt.blockNumber)
+        const createdAt = new Date(block.timestamp * 1000).toISOString()
+        
         // Store in memory
         if (!global.didStore) {
           global.didStore = {}
@@ -257,7 +285,8 @@ export default async function handler(req, res) {
           services: [],
           onChain: true,
           transactionHash: receipt.Hash,
-          blockNumber: receipt.blockNumber
+          blockNumber: receipt.blockNumber,
+          createdAt: createdAt
         }
         
         global.didStore[walletAddress] = identifier
@@ -267,6 +296,7 @@ export default async function handler(req, res) {
           did: did,
           transactionHash: receipt.Hash,
           blockNumber: receipt.blockNumber,
+          createdAt: createdAt,
           explorerUrl: `https://sepolia.etherscan.io/tx/${receipt.transactionHash}`
         })
         

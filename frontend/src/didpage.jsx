@@ -8,14 +8,26 @@ export default function DidPage() {
   const navigate = useNavigate();
   const [walletAddress, setWalletAddress] = useState('');
   const [userDID, setUserDID] = useState('');
+  const [createdAt, setCreatedAt] = useState('');
 
   useEffect(() => {
     // Retrieve from localStorage
     const wallet = localStorage.getItem('walletAddress');
     const did = localStorage.getItem('userDID');
+    const didCreated = localStorage.getItem('didCreatedAt');
     
     if (wallet) setWalletAddress(wallet);
     if (did) setUserDID(did);
+    if (didCreated) {
+      // Format date as "15 Jan 2023"
+      const date = new Date(didCreated);
+      const formatted = date.toLocaleDateString('en-GB', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      });
+      setCreatedAt(formatted);
+    }
   }, []);
 
   return (
@@ -95,7 +107,9 @@ export default function DidPage() {
                 />
               </span>
               <div className="didInfoContent">
-                <span className="didInfoLabel" style={{marginTop: "-5px"}}>Created On 15 Jan 2023</span>
+                <span className="didInfoLabel" style={{marginTop: "-5px"}}>
+                  {createdAt ? `Created On ${createdAt}` : 'Created On...'}
+                </span>
               </div>
             </div>
           </div>
