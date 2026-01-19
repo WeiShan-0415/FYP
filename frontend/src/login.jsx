@@ -41,22 +41,33 @@ export default function Login() {
           const username = prompt("Please enter your full name to complete your profile:");
           
           if (username && username.trim() !== "") {
-            // Update DID with username
-            const updateResponse = await fetch('/api/agent/update-did', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ walletAddress, username: username.trim() })
-            });
-            
-            if (updateResponse.ok) {
+            try {
+              // Update DID with username
+              console.log("Updating username on blockchain...");
+              const updateResponse = await fetch('/api/agent/update-did', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ walletAddress, username: username.trim() })
+              });
+              
+              if (!updateResponse.ok) {
+                const errorData = await updateResponse.json();
+                throw new Error(errorData.error || 'Failed to update username');
+              }
+              
               const updateResult = await updateResponse.json();
               localStorage.setItem("username", username.trim());
-              console.log("Username updated successfully");
+              console.log("Username updated successfully:", updateResult);
               
               // Show transaction confirmation
               if (updateResult.transactionHash) {
                 alert(`Username saved to blockchain!\nTransaction: ${updateResult.transactionHash}`);
               }
+            } catch (updateError) {
+              console.error("Failed to update username:", updateError);
+              alert("Failed to save username: " + updateError.message);
+              // Still save locally even if blockchain update fails
+              localStorage.setItem("username", username.trim());
             }
           }
         } else {
