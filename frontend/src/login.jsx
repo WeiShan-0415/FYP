@@ -42,31 +42,45 @@ export default function Login() {
           
           if (username && username.trim() !== "") {
             try {
-              // Update DID with username
-              console.log("Updating username on blockchain...");
-              const updateResponse = await fetch('/api/agent/update-did', {
+              console.log("Saving username to blockchain using MetaMask...");
+              
+              // Import ethers from CDN or use window.ethers if available
+              const { ethers } = await import('https://cdn.jsdelivr.net/npm/ethers@6.7.0/+esm');
+              
+              const provider = new ethers.BrowserProvider(window.ethereum);
+              const signer = await provider.getSigner();
+              
+              const DID_REGISTRY = '0x03d5003bf0e79c5f5223588f347eba39afbc3818';
+              const DID_REGISTRY_ABI = [
+                'function setAttribute(address identity, bytes32 name, bytes value, uint validity) external'
+              ];
+              
+              const contract = new ethers.Contract(DID_REGISTRY, DID_REGISTRY_ABI, signer);
+              
+              const name = ethers.encodeBytes32String('did/pub/username');
+              const value = ethers.toUtf8Bytes(username.trim());
+              const validity = 86400 * 365 * 10; // 10 years
+              
+              const tx = await contract.setAttribute(walletAddress, name, value, validity);
+              console.log("Transaction sent:", tx.hash);
+              
+              alert("Please wait while transaction is being confirmed...");
+              await tx.wait();
+              
+              localStorage.setItem("username", username.trim());
+              alert(`Username saved to blockchain!\nTransaction: ${tx.hash}`);
+              
+              // Also update server cache
+              await fetch('/api/agent/update-did', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ walletAddress, username: username.trim() })
-              });
+              }).catch(err => console.log("Cache update failed:", err));
               
-              if (!updateResponse.ok) {
-                const errorData = await updateResponse.json();
-                throw new Error(errorData.error || 'Failed to update username');
-              }
-              
-              const updateResult = await updateResponse.json();
-              localStorage.setItem("username", username.trim());
-              console.log("Username updated successfully:", updateResult);
-              
-              // Show transaction confirmation
-              if (updateResult.transactionHash) {
-                alert(`Username saved to blockchain!\nTransaction: ${updateResult.transactionHash}`);
-              }
             } catch (updateError) {
               console.error("Failed to update username:", updateError);
               alert("Failed to save username: " + updateError.message);
-              // Still save locally even if blockchain update fails
+              // Still save locally
               localStorage.setItem("username", username.trim());
             }
           }
