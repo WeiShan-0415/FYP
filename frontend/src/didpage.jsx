@@ -108,7 +108,7 @@ export default function DidPage() {
               </span>
               <div className="didInfoContent">
                 <span className="didInfoLabel" style={{marginTop: "-5px"}}>
-                  {createdAt ? `Created On ${createdAt}` : 'Created On...'}
+                  {createdAt ? `Created On ${createdAt}` : 'Created On ...'}
                 </span>
               </div>
             </div>

@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import QRCode from 'qrcode.react';
 import './App.css';
 import TabBar from './TabBar';
 
 
 export default function ShareDid() {
   const navigate = useNavigate();
+  const [userDID, setUserDID] = useState('');
+  useEffect(() => {
+    // Retrieve from localStorage
+    const did = localStorage.getItem('userDID');  
+    if (did) setUserDID(did);
+  }, []);
+
   return (
     <div className="appShell">
       {/* Top header */}
@@ -26,11 +34,16 @@ export default function ShareDid() {
         <div className="didHeader">
           <div className="shareDID">
             <div className="didIcon">
-            <img
-              src='/qrcode.png'
-              alt="Share Icon"
-              className='shareDIDImage'
-            />
+            {userDID ? (
+              <QRCode 
+                value={userDID}
+                size={200}
+                level="H"
+                includeMargin={true}
+              />
+            ) : (
+              <p>Loading QR Code...</p>
+            )}
             </div>
           </div>
           <h3 className="didTitle">Your Decentralised ID</h3>
@@ -45,7 +58,7 @@ export default function ShareDid() {
         <div className="credentialCard"style={{gap: "20px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">DID Key</h4>
-            <p className="cardIssued">did:key:z6MkjH6civFfkrzmKe8Bi....37hFxgniL29ra1G</p>
+            <p className="cardIssued">{userDID ? userDID : 'Loading...'}</p>
           </div>
           
         </div>
