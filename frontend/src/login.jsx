@@ -49,8 +49,14 @@ export default function Login() {
             });
             
             if (updateResponse.ok) {
+              const updateResult = await updateResponse.json();
               localStorage.setItem("username", username.trim());
               console.log("Username updated successfully");
+              
+              // Show transaction confirmation
+              if (updateResult.transactionHash) {
+                alert(`Username saved to blockchain!\nTransaction: ${updateResult.transactionHash}`);
+              }
             }
           }
         } else {
