@@ -388,6 +388,24 @@ export default async function handler(req, res) {
         const receipt = await tx.wait()
         console.log('Transaction confirmed:', receipt.transactionHash)
         
+        // Also write username to blockchain if provided
+        if (username && username.trim()) {
+          console.log(`Writing username to blockchain...`)
+          const usernameName = ethers.encodeBytes32String('did/pub/username')
+          const usernameValue = ethers.toUtf8Bytes(username.trim())
+          
+          const usernameTx = await didRegistry.setAttribute(
+            walletAddress,
+            usernameName,
+            usernameValue,
+            validity
+          )
+          
+          console.log('Username transaction sent:', usernameTx.hash)
+          await usernameTx.wait()
+          console.log('Username transaction confirmed')
+        }
+        
         // Get block timestamp for creation date
         const block = await provider.getBlock(receipt.blockNumber)
         const createdAt = new Date(block.timestamp * 1000).toISOString()
