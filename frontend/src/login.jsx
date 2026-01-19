@@ -35,12 +35,41 @@ export default function Login() {
         if (checkResult.createdAt) {
           localStorage.setItem("didCreatedAt", checkResult.createdAt);
         }
+        
+        // Check if username exists, if not prompt for it
+        if (!checkResult.username) {
+          const username = prompt("Please enter your full name to complete your profile:");
+          
+          if (username && username.trim() !== "") {
+            // Update DID with username
+            const updateResponse = await fetch('/api/agent/update-did', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ walletAddress, username: username.trim() })
+            });
+            
+            if (updateResponse.ok) {
+              localStorage.setItem("username", username.trim());
+              console.log("Username updated successfully");
+            }
+          }
+        } else {
+          localStorage.setItem("username", checkResult.username);
+        }
       } else {
+        // Prompt user to enter their full name
+        const username = prompt("Please enter your full name:");
+        
+        if (!username || username.trim() === "") {
+          alert("Name is required to register a DID");
+          return;
+        }
+
         console.log("Registering DID on Sepolia blockchain...");
         const registerResponse = await fetch('/api/agent/register-did-onchain', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ walletAddress })
+          body: JSON.stringify({ walletAddress, username: username.trim() })
         });
 
         if (!registerResponse.ok) {
@@ -52,9 +81,9 @@ export default function Login() {
         console.log("DID registered on blockchain:", result);
         
         localStorage.setItem("userDID", result.did);
-        if (result.createdAt) {
-          localStorage.setItem("didCreatedAt", result.createdAt);
-        }
+        localStorage.setItem("username", username.trim());
+        localStorage.setItem("didCreatedAt", result.createdAt);
+        
         
         // Show success message with transaction hash
         if (result.transactionHash) {

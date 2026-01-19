@@ -119,6 +119,7 @@ export default async function handler(req, res) {
             source: 'local_cache',
             did: did,
             identifier: global.didStore[walletAddress],
+            username: global.didStore[walletAddress].username,
             createdAt: global.didStore[walletAddress].createdAt
           })
         }
@@ -164,6 +165,7 @@ export default async function handler(req, res) {
               source: 'blockchain',
               did: did,
               owner: owner,
+              username: null,
               createdAt: createdAt
             })
           }
@@ -174,8 +176,107 @@ export default async function handler(req, res) {
         return res.status(200).json({ exists: false, did: did })
       }
 
+    if (path === '/api/agent/update-did' && method === 'POST') {
+      const { walletAddress, username } = req.body
+      
+      if (!walletAddress) {
+        return res.status(400).json({ error: 'walletAddress is required' })
+      }
+
+      if (!username) {
+        return res.status(400).json({ error: 'username is required' })
+      }
+
+      if (!process.env.PRIVATE_KEY) {
+        return res.status(500).json({ 
+          error: 'Server private key not configured. Please set PRIVATE_KEY environment variable.' 
+        })
+      }
+
+      try {
+        // Dynamic import ethers
+        const { ethers } = await import('ethers')
+        
+        const rpcUrl = process.env.ETH_RPC_URL || `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+        if (!rpcUrl || rpcUrl.includes('undefined')) {
+          return res.status(500).json({ 
+            error: 'RPC URL not configured. Set ETH_RPC_URL or INFURA_PROJECT_ID.' 
+          })
+        }
+
+        // Connect to Sepolia
+        const provider = new ethers.JsonRpcProvider(rpcUrl)
+        const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
+        
+        // DID Registry contract
+        const DID_REGISTRY = '0x03d5003bf0e79c5f5223588f347eba39afbc3818'
+        const DID_REGISTRY_ABI = [
+          'function setAttribute(address identity, bytes32 name, bytes value, uint validity) external'
+        ]
+        
+        const didRegistry = new ethers.Contract(DID_REGISTRY, DID_REGISTRY_ABI, wallet)
+        
+        // Set username attribute on blockchain
+        const name = ethers.encodeBytes32String('did/pub/username')
+        const value = ethers.toUtf8Bytes(username.trim())
+        const validity = 86400 * 365 * 10 // 10 years validity
+        
+        console.log(`Updating username for DID ${walletAddress} on Sepolia...`)
+        const tx = await didRegistry.setAttribute(
+          walletAddress,
+          name,
+          value,
+          validity
+        )
+        
+        console.log('Transaction sent:', tx.hash)
+        const receipt = await tx.wait()
+        console.log('Transaction confirmed:', receipt.transactionHash)
+
+        // Initialize global DID store if not exists
+        if (!global.didStore) {
+          global.didStore = {}
+        }
+
+        const did = `did:ethr:sepolia:${walletAddress}`
+        
+        // Update or create entry in memory
+        if (global.didStore[walletAddress]) {
+          global.didStore[walletAddress].username = username.trim()
+          global.didStore[walletAddress].updatedAt = new Date().toISOString()
+        } else {
+          global.didStore[walletAddress] = {
+            did: did,
+            provider: 'did:ethr:sepolia',
+            controllerKeyId: walletAddress,
+            username: username.trim(),
+            keys: [],
+            services: [],
+            onChain: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        }
+        
+        return res.status(200).json({
+          success: true,
+          did: did,
+          username: username.trim(),
+          transactionHash: receipt.transactionHash,
+          blockNumber: receipt.blockNumber,
+          explorerUrl: `https://sepolia.etherscan.io/tx/${receipt.transactionHash}`,
+          identifier: global.didStore[walletAddress]
+        })
+      } catch (error) {
+        console.error('Blockchain update error:', error)
+        return res.status(500).json({ 
+          error: error.message || 'Failed to update username on blockchain' 
+        })
+      }
+    }
+
     if (path === '/api/agent/create-did' && method === 'POST')  {
-      const { walletAddress } = req.body
+      const { walletAddress, username } = req.body
       
       if (!walletAddress) {
         return res.status(400).json({ error: 'walletAddress is required' })
@@ -202,8 +303,10 @@ export default async function handler(req, res) {
         did: did,
         provider: 'did:ethr:sepolia',
         controllerKeyId: walletAddress,
+        username: username,
         keys: [],
-        services: []
+        services: [],
+        createdAt: new Date().toISOString()
       }
 
       // Store in memory
@@ -213,7 +316,7 @@ export default async function handler(req, res) {
     }
 
     if (path === '/api/agent/register-did-onchain' && method === 'POST') {
-      const { walletAddress } = req.body
+      const { walletAddress, username } = req.body
       
       if (!walletAddress) {
         return res.status(400).json({ error: 'walletAddress is required' })
@@ -281,6 +384,7 @@ export default async function handler(req, res) {
           did: did,
           provider: 'did:ethr:sepolia',
           controllerKeyId: walletAddress,
+          username: username || null,
           keys: [],
           services: [],
           onChain: true,
