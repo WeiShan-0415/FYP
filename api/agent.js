@@ -142,8 +142,9 @@ export default async function handler(req, res) {
           
           if (owner !== '0x0000000000000000000000000000000000000000') {
             let createdAt = null
+            let username = null
             
-            // Try to get creation date from the first DIDAttributeChanged event
+            // Try to get creation date and username from DIDAttributeChanged events
             try {
               const currentBlock = await provider.getBlockNumber()
               const filter = contract.filters.DIDAttributeChanged(walletAddress)
@@ -151,13 +152,30 @@ export default async function handler(req, res) {
               const events = await contract.queryFilter(filter, Math.max(0, currentBlock - 1000000), currentBlock)
               
               if (events.length > 0) {
-                // Get the first event (earliest block)
-                const firstEvent = events.sort((a, b) => a.blockNumber - b.blockNumber)[0]
+                // Sort events by block number
+                const sortedEvents = events.sort((a, b) => a.blockNumber - b.blockNumber)
+                
+                // Get the first event (earliest block) for creation date
+                const firstEvent = sortedEvents[0]
                 const block = await provider.getBlock(firstEvent.blockNumber)
                 createdAt = new Date(block.timestamp * 1000).toISOString()
+                
+                // Look for username attribute in all events
+                for (const event of sortedEvents) {
+                  try {
+                    const attributeName = ethers.decodeBytes32String(event.args.name)
+                    if (attributeName === 'did/pub/username') {
+                      username = ethers.toUtf8String(event.args.value)
+                      console.log('Found username on blockchain:', username)
+                      break
+                    }
+                  } catch (decodeError) {
+                    // Skip events that can't be decoded
+                  }
+                }
               }
             } catch (eventError) {
-              console.error("Failed to fetch creation date:", eventError)
+              console.error("Failed to fetch blockchain data:", eventError)
             }
             
             return res.status(200).json({
@@ -165,7 +183,7 @@ export default async function handler(req, res) {
               source: 'blockchain',
               did: did,
               owner: owner,
-              username: null,
+              username: username,
               createdAt: createdAt
             })
           }
