@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
@@ -8,6 +8,11 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false)
   const [didResult, setDidResult] = useState(null)
   const [error, setError] = useState(null)
+  const [username, setUsername] = useState('')
+  useEffect(() => {
+    const user = localStorage.getItem('username') 
+    if (user) {setUsername(user)}  
+  }, [])
 
   async function createDid() {
     setLoading(true)
@@ -30,7 +35,7 @@ export default function HomePage() {
       {/* Top hero header */}
       <div className="header">
         <div className="heroContent">
-          <h2 className="greeting">Hello Foo !</h2>
+          <h2 className="greeting">Hello {username}!</h2>
           <button className="avatarBtn" aria-label="Profile" onClick={() => navigate('/profile')}>
             <span role="img" aria-label="user">👤</span>
           </button>

@@ -8,10 +8,13 @@ import TabBar from './TabBar';
 export default function ShareDid() {
   const navigate = useNavigate();
   const [userDID, setUserDID] = useState('');
+  const [username, setUsername] = useState('');
   const qrRef = useRef();
 
   useEffect(() => {
     // Retrieve from localStorage
+    const user = localStorage.getItem('username');
+    if (user) setUsername(user);
     const did = localStorage.getItem('userDID');  
     if (did) setUserDID(did);
   }, []);
@@ -65,7 +68,7 @@ export default function ShareDid() {
           <div className="credentialCard"style={{gap: "20px"}}>
           <div className="cardContent"style={{textAlign: "Left"}}>
             <h4 className="cardName">Name</h4>
-            <p className="cardIssued">Foo Wei Shan</p>
+            <p className="cardIssued">{username ? username : 'Loading...'}</p>
           </div>
         </div>
 

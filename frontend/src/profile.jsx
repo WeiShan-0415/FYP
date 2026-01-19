@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
@@ -7,7 +7,11 @@ import TabBar from './TabBar';
 export default function Profile() {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState(null);
-
+  const [username, setUsername] = useState('');
+  useEffect(() => {
+    const user = localStorage.getItem('username');
+    if (user) setUsername(user);
+  }, []);
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -52,7 +56,7 @@ export default function Profile() {
             />
           </div>
           <div className="profileInfo">
-            <h1 className="profileName">Foo</h1>
+            <h1 className="profileName">{username}</h1>
           </div>
         </div>
         <div className="profileDivider"></div>
