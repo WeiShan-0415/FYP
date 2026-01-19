@@ -21,7 +21,7 @@ export default function ShareDid() {
       const qrCode = new QRCodeStyling({
         width: 200,
         height: 200,
-        data: userDID,
+        data: `DID: ${userDID}`,
         margin: 10,
         qrOptions: {
           typeNumber: 0,
