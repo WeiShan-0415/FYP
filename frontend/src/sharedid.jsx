@@ -1,6 +1,6 @@
-import { useState,useEffect } from 'react';
+import { useState,useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import QRCode from 'qrcode.react';
+import QRCodeStyling from 'qr-code-styling';
 import './App.css';
 import TabBar from './TabBar';
 
@@ -8,11 +8,35 @@ import TabBar from './TabBar';
 export default function ShareDid() {
   const navigate = useNavigate();
   const [userDID, setUserDID] = useState('');
+  const qrRef = useRef();
+
   useEffect(() => {
     // Retrieve from localStorage
     const did = localStorage.getItem('userDID');  
     if (did) setUserDID(did);
   }, []);
+
+  useEffect(() => {
+    if (userDID && qrRef.current) {
+      const qrCode = new QRCodeStyling({
+        width: 200,
+        height: 200,
+        data: userDID,
+        margin: 10,
+        qrOptions: {
+          typeNumber: 0,
+          mode: 'Byte',
+          errorCorrectionLevel: 'H'
+        },
+        imageOptions: {
+          hideBackgroundDots: true,
+          imageSize: 0.4,
+          margin: 0
+        }
+      });
+      qrCode.append(qrRef.current);
+    }
+  }, [userDID]);
 
   return (
     <div className="appShell">
@@ -33,17 +57,7 @@ export default function ShareDid() {
         <div className="didCard">
         <div className="didHeader">
           <div className="shareDID">
-            <div className="didIcon">
-            {userDID ? (
-              <QRCode 
-                value={userDID}
-                size={200}
-                level="H"
-                includeMargin={true}
-              />
-            ) : (
-              <p>Loading QR Code...</p>
-            )}
+            <div className="didIcon" ref={qrRef}>
             </div>
           </div>
           <h3 className="didTitle">Your Decentralised ID</h3>
