@@ -6,7 +6,6 @@ import TabBar from './TabBar';
 export default function HomePage() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [didResult, setDidResult] = useState(null)
   const [error, setError] = useState(null)
   const [username, setUsername] = useState('')
   useEffect(() => {
@@ -14,28 +13,12 @@ export default function HomePage() {
     if (user) {setUsername(user)}  
   }, [])
 
-  async function createDid() {
-    setLoading(true)
-    setError(null)
-    setDidResult(null)
-    try {
-      const res = await fetch('/api/agent/create-did', { method: 'GET' })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || JSON.stringify(json))
-      setDidResult(json)
-    } catch (err) {
-      setError(err.message || String(err))
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
     <div className="appShell">
       {/* Top hero header */}
       <div className="header">
         <div className="heroContent">
-          <h2 className="greeting">Hello {username}!</h2>
+          <h2 className="greeting">Hello {username} !</h2>
           <button className="avatarBtn" aria-label="Profile" onClick={() => navigate('/profile')}>
             <span role="img" aria-label="user">👤</span>
           </button>
@@ -73,13 +56,6 @@ export default function HomePage() {
         {error && (
           <div className="card error">
             <strong>Error:</strong> {error}
-          </div>
-        )}
-
-        {didResult && (
-          <div className="card">
-            <h4 className="cardTitle">Created DID</h4>
-            <pre className="codeBlock">{JSON.stringify(didResult, null, 2)}</pre>
           </div>
         )}
       </main>

@@ -75,7 +75,7 @@ export default function ShareDid() {
         <div className="credentialCard"style={{gap: "20px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">DID Key</h4>
-            <p className="cardIssued">{userDID ? userDID : 'Loading...'}</p>
+            <p className="cardIssued">{userDID ? `${userDID.slice(0, 40)}...${userDID.slice(-4)}` : 'Loading...'}</p>
           </div>
           
         </div>
