@@ -112,18 +112,6 @@ export default async function handler(req, res) {
 
         const did = `did:ethr:sepolia:${walletAddress}`
         
-        // 1. Check Local Store First
-        if (global.didStore && global.didStore[walletAddress]) {
-          return res.status(200).json({ 
-            exists: true, 
-            source: 'local_cache',
-            did: did,
-            identifier: global.didStore[walletAddress],
-            username: global.didStore[walletAddress].username,
-            createdAt: global.didStore[walletAddress].createdAt
-          })
-        }
-
         // 2. Fallback: Check the Blockchain (Real Verification)
         try {
           const { ethers } = await import('ethers')
