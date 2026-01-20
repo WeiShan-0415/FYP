@@ -8,15 +8,12 @@ export default function ProfileDetails() {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState(null);
   const [username, setUsername] = useState('');
-  const [metamaskId, setMetamaskId] = useState(() => localStorage.getItem('walletAddress') || '');
   const [did, setDid] = useState(() => localStorage.getItem('userDID') || '');
 
   useEffect(() => {
-    const storedAddress = localStorage.getItem('walletAddress');
     const storedDID = localStorage.getItem('userDID');
     const user= localStorage.getItem('username');
     if (user) {setUsername(user);}
-    if (storedAddress) {setMetamaskId(storedAddress);}
     if (storedDID) {setDid(storedDID);}
   }, []);
 
@@ -72,17 +69,6 @@ export default function ProfileDetails() {
             className="credentialInput"
             style={{color: "grey"}}
             value={username}
-            readOnly
-          />
-        </div>
-
-        <div className="credentialInputSection">
-          <h3 className="inputLabel">MetaMask ID:</h3>
-          <input
-            type="text"
-            className="credentialInput"
-            style={{color: "grey"}}
-            value={metamaskId || 'Not connected'}
             readOnly
           />
         </div>
