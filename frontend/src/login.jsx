@@ -104,10 +104,16 @@ export default function Login() {
         // HANDLE EXISTING USER
         localStorage.setItem("userDID", checkResult.did);
         if (checkResult.createdAt) localStorage.setItem("didCreatedAt", checkResult.createdAt);
-        if (checkResult.username) {
-          localStorage.setItem("username", checkResult.username);
-          alert(`Welcome back, ${checkResult.username}!`);
+        
+        // Check if username exists
+        if (!checkResult.username) {
+          // DID exists but no username - redirect to registration to add username
+          navigate("/registration");
+          return;
         }
+        
+        localStorage.setItem("username", checkResult.username);
+        alert(`Welcome back, ${checkResult.username}!`);
 
         // Check if they need to authorize the agent (your backend wallet)
         if (!localStorage.getItem("agentAuthorized")) {
