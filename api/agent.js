@@ -212,9 +212,12 @@ export default async function handler(req, res) {
         // DID Registry contract
         const DID_REGISTRY = '0x03d5003bf0e79c5f5223588f347eba39afbc3818'
         const DID_REGISTRY_ABI = [
-          'function setAttribute(address identity, bytes32 name, bytes value, uint validity) external'
-        ]
-        
+          // Standard setAttribute (requires Owner to be msg.sender)
+          'function setAttribute(address identity, bytes32 name, bytes value, uint validity) external',
+          // Signed version (allows server to pay gas for user)
+          'function setAttributeSigned(address identity, uint8 sigV, bytes32 sigR, bytes32 sigS, bytes32 name, bytes value, uint validity) external'
+        ];
+              
         const didRegistry = new ethers.Contract(DID_REGISTRY, DID_REGISTRY_ABI, wallet)
         
         // Set username attribute on blockchain
