@@ -276,46 +276,6 @@ export default async function handler(req, res) {
       }
     }
 
-    if (path === '/api/agent/create-did' && method === 'POST')  {
-      const { walletAddress, username } = req.body
-      
-      if (!walletAddress) {
-        return res.status(400).json({ error: 'walletAddress is required' })
-      }
-
-      // Initialize global DID store if not exists
-      if (!global.didStore) {
-        global.didStore = {}
-      }
-
-      const did = `did:ethr:sepolia:${walletAddress}`
-      
-      // Check if already exists
-      if (global.didStore[walletAddress]) {
-        return res.status(200).json({ 
-          message: 'DID already exists',
-          did: did,
-          identifier: global.didStore[walletAddress]
-        })
-      }
-
-      // Create DID identifier (no private key needed, just the DID format)
-      const identifier = {
-        did: did,
-        provider: 'did:ethr:sepolia',
-        controllerKeyId: walletAddress,
-        username: username,
-        keys: [],
-        services: [],
-        createdAt: new Date().toISOString()
-      }
-
-      // Store in memory
-      global.didStore[walletAddress] = identifier
-      
-      return res.status(200).json(identifier)
-    }
-
     if (path === '/api/agent/register-did-onchain' && method === 'POST') {
       const { walletAddress, username } = req.body
       
