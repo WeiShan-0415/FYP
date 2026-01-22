@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import { ethers } from "ethers";
-
+import { useEffect } from 'react';
 
 export default function Login() {
   const AGENT_ADDRESS = "0x47aEc0f75CE06ce16dCB873894836CBB3E1cEaB0";
