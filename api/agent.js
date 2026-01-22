@@ -99,10 +99,6 @@ export default async function handler(req, res) {
   const path = new URL(req.url, `http://${req.headers.host}`).pathname
 
   try {
-    if (path === '/api/agent/ping' && method === 'GET') {
-      return res.status(200).json({ message: 'Veramo Agent is alive!' })
-    }
-
     if (path === '/api/agent/check-did' && method === 'POST') {
         const { walletAddress } = req.body
         
@@ -112,7 +108,6 @@ export default async function handler(req, res) {
 
         const did = `did:ethr:sepolia:${walletAddress}`
         
-        // 2. Fallback: Check the Blockchain (Real Verification)
         try {
           const { ethers } = await import('ethers')
           const rpcUrl = process.env.ETH_RPC_URL || `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`

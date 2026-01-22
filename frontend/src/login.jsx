@@ -67,7 +67,7 @@ export default function Login() {
               alert("Please wait while transaction is being confirmed...");
               await tx.wait();
               
-              localStorage.setItem("username", username.trim());
+              // localStorage.setItem("username", username.trim());
               alert(`Username saved to blockchain!\nTransaction: ${tx.hash}`);
               
               // Also update server cache
@@ -81,7 +81,7 @@ export default function Login() {
               console.error("Failed to update username:", updateError);
               alert("Failed to save username: " + updateError.message);
               // Still save locally
-              localStorage.setItem("username", username.trim());
+              // localStorage.setItem("username", username.trim());
             }
           }
         } else {
