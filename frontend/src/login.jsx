@@ -88,74 +88,24 @@ export default function Login() {
         // HANDLE EXISTING USER
         localStorage.setItem("userDID", checkResult.did);
         if (checkResult.createdAt) localStorage.setItem("didCreatedAt", checkResult.createdAt);
+        if (checkResult.username) localStorage.setItem("username", checkResult.username);
 
         // Check if they need to authorize the agent (your backend wallet)
         if (!localStorage.getItem("agentAuthorized")) {
-          await authorizeAgent(walletAddress); // User signs delegation
+          await authorizeAgent(walletAddress);
           localStorage.setItem("agentAuthorized", "true");
         }
 
-        // If they exist but have no name, prompt and update blockchain
-        if (!checkResult.username) {
-          const username = prompt("Please enter your full name:");
-          if (username) {
-            try {
-              // A. User signs and pays gas for the name update
-              const txHash = await updateUsernameOnChain(walletAddress, username);
-              
-              // B. Sync with backend
-              await fetch('/api/agent/update-did', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ walletAddress, username, txHash })
-              });
-              
-              localStorage.setItem("username", username);
-              alert("Profile updated successfully!");
-            } catch (err) {
-              console.error("Blockchain update failed:", err);
-              alert("Transaction failed. Profile not updated.");
-              return; // Stop navigation if blockchain update fails
-            }
-          }
-        } else {
-          localStorage.setItem("username", checkResult.username);
-        }
+        // Navigate to homepage
+        navigate("/homepage");
       } else {
-        // HANDLE NEW USER (Registration)
-        const username = prompt("Please enter your full name:");
-        if (!username || username.trim() === "") {
-          alert("Name is required to register a DID");
-          return;
-        }
-
-        const registerResponse = await fetch('/api/agent/register-did-onchain', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ walletAddress, username: username.trim() })
-        });
-
-        if (!registerResponse.ok) {
-          const error = await registerResponse.json();
-          throw new Error(error.error || 'Failed to register DID');
-        }
-
-        const result = await registerResponse.json();
-        localStorage.setItem("userDID", result.did);
-        localStorage.setItem("username", username.trim());
-        localStorage.setItem("didCreatedAt", result.createdAt);
-        
-        if (result.transactionHash) {
-          alert("DID created and registered on Sepolia!");
-        }
+        // NEW USER - Redirect to registration page
+        navigate("/registration");
       }
-
-      // 3. Final Step: Go to Homepage
-      navigate("/homepage");
 
     } catch (error) {
       console.error("Login process failed:", error);
-      alert(error.code === 4001 ? "User rejected request" : "Setup failed: " + error.message);
+      alert(error.code === 4001 ? "User rejected request" : "Login failed: " + error.message);
     }
   };
   return (

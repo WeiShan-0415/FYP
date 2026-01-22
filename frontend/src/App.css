@@ -839,6 +839,80 @@ body {
   line-height: 1.5;
 }
 
+.registrationSubtitle {
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #fff;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.registrationForm {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nameInput {
+  width: 100%;
+  padding: 16px 20px;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 50px;
+  font-size: 16px;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #1f2937;
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.nameInput:focus {
+  border-color: #01FFE1;
+  box-shadow: 0 4px 16px rgba(1, 255, 225, 0.2);
+}
+
+.nameInput::placeholder {
+  color: #9ca3af;
+}
+
+.nameInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.registerBtn {
+  width: 100%;
+  padding: 16px 24px;
+  background: #01FFE1;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #0f172a;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(1, 255, 225, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.registerBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(1, 255, 225, 0.4);
+}
+
+.registerBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.registerBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .metamaskBtn {
   width: 85%;
   max-width: 320px;

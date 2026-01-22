@@ -14,12 +14,14 @@ import VerificationManual from './verificationManual.jsx'
 import History from './history.jsx'
 import ProfileDetails from './profileDetail.jsx'
 import Login from './login.jsx'
+import Registration from './registration.jsx'
 
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/registration" element={<Registration />} />
         <Route path="/homepage" element={<HomePage />} />
         <Route path="/credential" element={<Credential />} />
         <Route path="/didpage" element={<DidPage />} />
