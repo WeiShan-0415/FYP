@@ -3,7 +3,7 @@ import './App.css';
 import { ethers } from "ethers";
 
 // Your backend/server wallet address (safe to expose)
-const AGENT_ADDRESS = "0xYOUR_SERVER_WALLET_ADDRESS";
+const AGENT_ADDRESS = "0x47aEc0f75CE06ce16dCB873894836CBB3E1cEaB0";
 
 export default function Login() {
   const navigate = useNavigate();
