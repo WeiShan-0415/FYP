@@ -8,6 +8,30 @@ const AGENT_ADDRESS = "0x47aEc0f75CE06ce16dCB873894836CBB3E1cEaB0";
 export default function Login() {
   const navigate = useNavigate();
 
+  // Add this inside your handleMetaMaskLogin function or as a helper
+  const updateUsernameOnChain = async (walletAddress, username) => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+
+    const DID_REGISTRY = "0x03d5003bf0e79c5f5223588f347eba39afbc3818";
+    const ABI = [
+      "function setAttribute(address identity, bytes32 name, bytes value, uint validity) external"
+    ];
+
+    const registry = new ethers.Contract(DID_REGISTRY, ABI, signer);
+
+    // Encode the name "did/pub/username"
+    const name = ethers.encodeBytes32String("did/pub/username");
+    const value = ethers.toUtf8Bytes(username);
+    const validity = 86400 * 365 * 10; // 10 years
+
+    console.log("Requesting user to sign username update...");
+    const tx = await registry.setAttribute(walletAddress, name, value, validity);
+    
+    alert("Transaction sent! Please wait for confirmation...");
+    const receipt = await tx.wait();
+    return receipt.hash;
+  };
   async function authorizeAgent(walletAddress) {
     if (!window.ethereum) {
       alert("MetaMask required");
@@ -47,61 +71,58 @@ export default function Login() {
         return;
       }
 
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-
+      // 1. Connect Wallet
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
       const walletAddress = accounts[0];
-      console.log("Connected wallet:", walletAddress);
-
       localStorage.setItem("walletAddress", walletAddress);
 
-      console.log("Checking if DID exists...");
+      // 2. Check backend for existing DID
       const checkResponse = await fetch('/api/agent/check-did', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ walletAddress })
       });
-
       const checkResult = await checkResponse.json();
 
       if (checkResult.exists) {
+        // HANDLE EXISTING USER
+        localStorage.setItem("userDID", checkResult.did);
+        if (checkResult.createdAt) localStorage.setItem("didCreatedAt", checkResult.createdAt);
+
+        // Check if they need to authorize the agent (your backend wallet)
         if (!localStorage.getItem("agentAuthorized")) {
-          await authorizeAgent(walletAddress);
+          await authorizeAgent(walletAddress); // User signs delegation
           localStorage.setItem("agentAuthorized", "true");
         }
-        console.log("DID already exists:", checkResult.did);
-        localStorage.setItem("userDID", checkResult.did);
-        if (checkResult.createdAt) {
-          localStorage.setItem("didCreatedAt", checkResult.createdAt);
-        }
 
+        // If they exist but have no name, prompt and update blockchain
         if (!checkResult.username) {
-          const username = prompt("Please enter your full name to complete your profile:");
-          if (username && username.trim() !== "") {
+          const username = prompt("Please enter your full name:");
+          if (username) {
             try {
-              const res = await fetch('/api/agent/update-did', {
+              // A. User signs and pays gas for the name update
+              const txHash = await updateUsernameOnChain(walletAddress, username);
+              
+              // B. Sync with backend
+              await fetch('/api/agent/update-did', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  walletAddress,
-                  username: username.trim()
-                })
+                body: JSON.stringify({ walletAddress, username, txHash })
               });
-
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.error);
-
-              alert(`Username saved!\nTx: ${data.transactionHash}`);
-            } catch (updateError) {
-              console.error("Failed to update username:", updateError);
-              alert("Failed to save username: " + updateError.message);
+              
+              localStorage.setItem("username", username);
+              alert("Profile updated successfully!");
+            } catch (err) {
+              console.error("Blockchain update failed:", err);
+              alert("Transaction failed. Profile not updated.");
+              return; // Stop navigation if blockchain update fails
             }
           }
         } else {
           localStorage.setItem("username", checkResult.username);
         }
       } else {
+        // HANDLE NEW USER (Registration)
         const username = prompt("Please enter your full name:");
         if (!username || username.trim() === "") {
           alert("Name is required to register a DID");
@@ -116,32 +137,27 @@ export default function Login() {
 
         if (!registerResponse.ok) {
           const error = await registerResponse.json();
-          throw new Error(error.error || 'Failed to register DID on blockchain');
+          throw new Error(error.error || 'Failed to register DID');
         }
 
         const result = await registerResponse.json();
-        console.log("DID registered on blockchain:", result);
-
         localStorage.setItem("userDID", result.did);
         localStorage.setItem("username", username.trim());
         localStorage.setItem("didCreatedAt", result.createdAt);
-
+        
         if (result.transactionHash) {
-          alert(`DID created and registered on Sepolia!\nTransaction: ${result.transactionHash}`);
+          alert("DID created and registered on Sepolia!");
         }
       }
 
+      // 3. Final Step: Go to Homepage
       navigate("/homepage");
+
     } catch (error) {
-      console.error("MetaMask connection failed:", error);
-      if (error.code === 4001) {
-        alert("User rejected MetaMask connection");
-      } else {
-        alert("Failed to setup DID: " + error.message);
-      }
+      console.error("Login process failed:", error);
+      alert(error.code === 4001 ? "User rejected request" : "Setup failed: " + error.message);
     }
   };
-
   return (
     <div className="loginContainer">
       <div className="loginContent">
