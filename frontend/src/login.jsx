@@ -6,7 +6,16 @@ import { useEffect } from 'react';
 export default function Login() {
   const AGENT_ADDRESS = "0x47aEc0f75CE06ce16dCB873894836CBB3E1cEaB0";
   const navigate = useNavigate();
+  
   useEffect(() => {
+    // Clear localStorage on page refresh
+    const navigation = performance.getEntriesByType('navigation')[0];
+    if (navigation && navigation.type === 'reload') {
+      console.log("Page refreshed - clearing local storage");
+      localStorage.clear();
+    }
+    
+    // Handle MetaMask account changes
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length > 0) {
