@@ -2,11 +2,27 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import { ethers } from "ethers";
 
-// Your backend/server wallet address (safe to expose)
-const AGENT_ADDRESS = "0x47aEc0f75CE06ce16dCB873894836CBB3E1cEaB0";
 
 export default function Login() {
+  const AGENT_ADDRESS = "0x47aEc0f75CE06ce16dCB873894836CBB3E1cEaB0";
   const navigate = useNavigate();
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length > 0) {
+          console.log("New account detected:", accounts[0]);
+          // Wipe local data to prevent cross-account "leakage"
+          localStorage.clear(); 
+          // Force a reload to the login page or re-run login logic
+          window.location.reload(); 
+        } else {
+          // Handle disconnection
+          localStorage.clear();
+          navigate("/");
+        }
+      });
+    }
+  }, [navigate]);
 
   // Add this inside your handleMetaMaskLogin function or as a helper
   const updateUsernameOnChain = async (walletAddress, username) => {
@@ -88,7 +104,10 @@ export default function Login() {
         // HANDLE EXISTING USER
         localStorage.setItem("userDID", checkResult.did);
         if (checkResult.createdAt) localStorage.setItem("didCreatedAt", checkResult.createdAt);
-        if (checkResult.username) localStorage.setItem("username", checkResult.username);
+        if (checkResult.username) {
+          localStorage.setItem("username", checkResult.username);
+          alert(`Welcome back, ${checkResult.username}!`);
+        }
 
         // Check if they need to authorize the agent (your backend wallet)
         if (!localStorage.getItem("agentAuthorized")) {
