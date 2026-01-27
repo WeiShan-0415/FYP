@@ -57,6 +57,27 @@ export default function Login() {
     const receipt = await tx.wait();
     return receipt.hash;
   };
+  async function checkAgentAuthorization(walletAddress) {
+    if (!window.ethereum) return false;
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const DID_REGISTRY = "0x03d5003bf0e79c5f5223588f347eba39afbc3818";
+    const ABI = [
+      "function validDelegate(address identity, bytes32 delegateType, address delegate) external view returns (bool)"
+    ];
+
+    const registry = new ethers.Contract(DID_REGISTRY, ABI, provider);
+    const delegateType = ethers.encodeBytes32String("did/pub/agent");
+
+    try {
+      const isValid = await registry.validDelegate(walletAddress, delegateType, AGENT_ADDRESS);
+      return isValid;
+    } catch (error) {
+      console.error("Error checking delegate:", error);
+      return false;
+    }
+  }
+
   async function authorizeAgent(walletAddress) {
     if (!window.ethereum) {
       alert("MetaMask required");
@@ -124,10 +145,10 @@ export default function Login() {
         localStorage.setItem("username", checkResult.username);
         alert(`Welcome back, ${checkResult.username}!`);
 
-        // Check if they need to authorize the agent (your backend wallet)
-        if (!localStorage.getItem("agentAuthorized")) {
+        // Check blockchain to see if agent is already authorized
+        const isAuthorized = await checkAgentAuthorization(walletAddress);
+        if (!isAuthorized) {
           await authorizeAgent(walletAddress);
-          localStorage.setItem("agentAuthorized", "true");
         }
 
         // Navigate to homepage
