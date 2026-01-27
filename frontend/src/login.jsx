@@ -8,13 +8,6 @@ export default function Login() {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Clear localStorage on page refresh
-    const navigation = performance.getEntriesByType('navigation')[0];
-    if (navigation && navigation.type === 'reload') {
-      console.log("Page refreshed - clearing local storage");
-      localStorage.clear();
-    }
-    
     // Handle MetaMask account changes
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts) => {
