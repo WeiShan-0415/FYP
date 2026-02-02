@@ -72,7 +72,7 @@ export default function credentialDetails() {
         </div><div className="credentialCard" style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Issuer</h4>
-            <p className="cardIssued">{credential?.issuerAddress || 'N/A'}</p>
+            <p className="cardIssued">did:ethr:sepolia:{formatMiddleEllipsis(credential?.issuerAddress) || 'N/A'}</p>
           </div>
         </div>
       </main>
