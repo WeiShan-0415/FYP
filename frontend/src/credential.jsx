@@ -1,10 +1,55 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
 
 export default function Credential() {
   const navigate = useNavigate();
+  const [credentials, setCredentials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCredentials = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Get user's DID from localStorage (set during login/registration)
+        const userDID = localStorage.getItem('userDID');
+        
+        if (!userDID) {
+          setError('User DID not found. Please login first.');
+          setLoading(false);
+          return;
+        }
+
+        // Call the API to fetch credentials for this subject DID
+        const response = await fetch(
+          `/api/agent/list-credentials?subjectDID=${encodeURIComponent(userDID)}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch credentials: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+          setCredentials(data.credentials);
+        } else {
+          setError('Failed to load credentials');
+        }
+      } catch (err) {
+        console.error('Error fetching credentials:', err);
+        setError(err.message || 'Failed to load credentials');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCredentials();
+  }, []);
   return (
     <div className="appShell">
       {/* Top header */}
@@ -34,63 +79,55 @@ export default function Credential() {
       <main className="homeCards">
         <div className="titleWithBadge">
           <h5 className="credentialTitle">Total</h5>
-          <span className="totalBadge">4</span>
-        </div>
-        <div className="credentialCard">
-          <div className="cardIcon">
-            <img
-                  src='/car.png'
-                  alt="Car"
-                />
-          </div>
-          <div className="cardContent">
-            <h4 className="cardName">Driver License</h4>
-            <p className="cardIssued">Issued: Jan 2023</p>
-          </div>
-          <span className="cardStatus active">Active</span>
+          <span className="totalBadge">{credentials.length}</span>
         </div>
 
-        <div className="credentialCard">
-          <div className="cardIcon">
-            <img
-                  src='/degree.png'
-                  alt="Degree"
-                />
+        {loading && (
+          <div style={{ padding: '20px', textAlign: 'center' }}>
+            <p>Loading credentials from blockchain...</p>
           </div>
-          <div className="cardContent" onClick={() => navigate('/credentialdetails')}>
-            <h4 className="cardName">University Degree</h4>
-            <p className="cardIssued">Issued: Jan 2023</p>
-          </div>
-          <span className="cardStatus active">Active</span>
-        </div>
+        )}
 
-        <div className="credentialCard">
-          <div className="cardIcon">
-            <img
-                  src='/passport.png'
-                  alt="Passport"
-                />
+        {error && (
+          <div style={{ 
+            padding: '20px', 
+            textAlign: 'center', 
+            color: '#d32f2f',
+            backgroundColor: '#ffebee',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <p>{error}</p>
           </div>
-          <div className="cardContent">
-            <h4 className="cardName">Passport</h4>
-            <p className="cardIssued">Issued: Jan 2023</p>
-          </div>
-          <span className="cardStatus expiring">Expiring Soon</span>
-        </div>
+        )}
 
-        <div className="credentialCard">
-          <div className="cardIcon">
-            <img
-                  src='/cooking.png'
-                  alt="Cooking Certificate"
-                />
+        {!loading && credentials.length === 0 && !error && (
+          <div style={{ 
+            padding: '20px', 
+            textAlign: 'center',
+            color: '#666'
+          }}>
+            <p>No credentials found on blockchain</p>
           </div>
-          <div className="cardContent">
-            <h4 className="cardName">Cooking Certificate</h4>
-            <p className="cardIssued">Issued: Jan 2023</p>
+        )}
+
+        {!loading && credentials.map((credential, index) => (
+          <div key={credential.id || index} className="credentialCard">
+            <div className="cardIcon">
+              <span role="img" aria-label="credential" style={{ fontSize: '32px' }}>
+                📜
+              </span>
+            </div>
+            <div className="cardContent" onClick={() => navigate('/credentialdetails')}>
+              <h4 className="cardName">{credential.title || credential.name}</h4>
+              <p className="cardIssued">Type: {credential.type}</p>
+              <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>
+                Hash: {credential.hash?.substring(0, 16)}...
+              </p>
+            </div>
+            <span className="cardStatus active">Verified</span>
           </div>
-          <span className="cardStatus active">Active</span>
-        </div>
+        ))}
       </main>
       <TabBar />
     </div>
