@@ -4,7 +4,6 @@ import { ethers } from "ethers";
 import { useEffect } from 'react';
 
 export default function Login() {
-  const AGENT_ADDRESS = "0x47aEc0f75CE06ce16dCB873894836CBB3E1cEaB0";
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -67,12 +66,6 @@ export default function Login() {
         
         localStorage.setItem("username", checkResult.username);
         alert(`Welcome back, ${checkResult.username}!`);
-
-        // Check blockchain to see if agent is already authorized
-        const isAuthorized = await checkAgentAuthorization(walletAddress);
-        if (!isAuthorized) {
-          await authorizeAgent(walletAddress);
-        }
 
         // Navigate to homepage
         navigate("/homepage");
