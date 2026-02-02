@@ -7,6 +7,11 @@ export default function credentialDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const credential = state?.credential;
+  const formatMiddleEllipsis = (value, start = 40, end = 4) => {
+    if (!value || typeof value !== 'string') return 'N/A';
+    if (value.length <= start + end + 3) return value;
+    return `${value.slice(0, start)}...${value.slice(-end)}`;
+  };
   return (
     <div className="appShell">
       {/* Top header */}
@@ -47,7 +52,7 @@ export default function credentialDetails() {
         <div className="credentialCard"style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Credential ID </h4>
-            <p className="cardIssued">{credential?.id || 'N/A'}</p>
+            <p className="cardIssued">{formatMiddleEllipsis(credential?.id)}</p>
           </div>
         </div>
 
@@ -61,13 +66,13 @@ export default function credentialDetails() {
         <div className="credentialCard" style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Title </h4>
-            <p className="cardIssued">{credential?.title || credential?.degree || 'N/A'}</p>
+            <p className="cardIssued">{credential?.title|| 'N/A'}</p>
           </div>
 
         </div><div className="credentialCard" style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Issuer</h4>
-            <p className="cardIssued">{credential?.issuer || 'N/A'}</p>
+            <p className="cardIssued">{credential?.issuerAddress || 'N/A'}</p>
           </div>
         </div>
       </main>

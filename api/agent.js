@@ -309,29 +309,6 @@ export default async function handler(req, res) {
       }
     }
 
-    if (path === '/api/agent/issue-credential' && method === 'POST') {
-      const agent = await getAgent()
-      const { subjectDID, name, degree } = req.body
-
-      // create issuer did if needed
-      const issuer = await agent.didManagerGetOrCreate({ provider: 'did:ethr:sepolia' })
-      //build credential
-      const credential = await agent.createVerifiableCredential({
-        credential:{
-          issuer: { id: issuer.did },
-          credentialSubject: {
-            id: subjectDID,
-            name:name,
-            degree:degree
-          },
-          type:['VerifiableCredential','UniversityDegreeCredential'],
-          issuanceDate: new Date().toISOString(),
-        },
-        proofFormat:'jwt',
-      })
-      return res.status(200).json(credential)
-    }
-
     if (path === '/api/agent/list-credentials' && method === 'GET') {
       try {
         const { ethers } = await import('ethers')
