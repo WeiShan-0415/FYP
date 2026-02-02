@@ -309,29 +309,6 @@ export default async function handler(req, res) {
       }
     }
 
-    if (path === '/api/agent/issue-credential' && method === 'POST') {
-      const agent = await getAgent()
-      const { subjectDID, name, degree } = req.body
-
-      // create issuer did if needed
-      const issuer = await agent.didManagerGetOrCreate({ provider: 'did:ethr:sepolia' })
-      //build credential
-      const credential = await agent.createVerifiableCredential({
-        credential:{
-          issuer: { id: issuer.did },
-          credentialSubject: {
-            id: subjectDID,
-            name:name,
-            degree:degree
-          },
-          type:['VerifiableCredential','UniversityDegreeCredential'],
-          issuanceDate: new Date().toISOString(),
-        },
-        proofFormat:'jwt',
-      })
-      return res.status(200).json(credential)
-    }
-
     if (path === '/api/agent/list-credentials' && method === 'GET') {
       try {
         const { ethers } = await import('ethers')
@@ -387,6 +364,12 @@ export default async function handler(req, res) {
               console.log('Attribute name (hex):', attributeName);
             }
 
+            // Skip non-credential events (only process events with "cred/" prefix)
+            if (typeof attributeName === 'string' && !attributeName.startsWith('cred/')) {
+              console.log('Skipping non-credential event:', attributeName);
+              continue;
+            }
+
             // 2. Decode and Clean Value
             const rawValue = ethers.toUtf8String(event.args.value);
             console.log('Raw value:', rawValue);
@@ -412,14 +395,14 @@ export default async function handler(req, res) {
                 issuer: event.args.identity,
                 blockNumber: event.blockNumber
               };
-              console.log('Adding credential to list:', credentialObj);
+              console.log('✓ Adding credential to list:', credentialObj);
               credentials.push(credentialObj);
             } else {
-              console.log('Skipping event - missing hash or subject:', data);
+              console.log('✗ Skipping event - missing hash or subject:', data);
             }
           } catch (parseError) {
             // Skip events that aren't valid JSON or UTF-8 (common in DID registries)
-            console.log('Parse error on event:', parseError.message);
+            console.log('✗ Parse error on event:', parseError.message);
             continue;
           }
         }
