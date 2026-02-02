@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
-import {useRef} from 'react';
+import {useRef,useEffect} from 'react';
 
 
 export default function credentialDetails() {
