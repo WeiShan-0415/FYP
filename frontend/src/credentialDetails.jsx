@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
 
 
 export default function credentialDetails() {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const credential = state?.credential;
   return (
     <div className="appShell">
       {/* Top header */}
@@ -37,36 +38,36 @@ export default function credentialDetails() {
           </div>
           </div>
           <div className="credentialCard">
-          <div className="cardContent"style={{textAlign: "Left"}}>
-            <h4 className="cardName">Name</h4>
-            <p className="cardIssued">Foo Wei Shan</p>
+            <div className="cardContent"style={{textAlign: "Left"}}>
+              <h4 className="cardName">Name</h4>
+              <p className="cardIssued">{credential?.name || 'N/A'}</p>
+            </div>
           </div>
-        </div>
 
         <div className="credentialCard"style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Credential ID </h4>
-            <p className="cardIssued">did:key:z6MkjH6civFfkrzmKe8Bi....37hFxgniL29ra1G</p>
+            <p className="cardIssued">{credential?.id || 'N/A'}</p>
           </div>
         </div>
 
         <div className="credentialCard"style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Credential Type </h4>
-            <p className="cardIssued">University Certification</p>
+            <p className="cardIssued">{credential?.type || 'N/A'}</p>
           </div>
         </div>
 
         <div className="credentialCard" style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Title </h4>
-            <p className="cardIssued">Computing Science</p>
+            <p className="cardIssued">{credential?.title || credential?.degree || 'N/A'}</p>
           </div>
 
         </div><div className="credentialCard" style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Issuer</h4>
-            <p className="cardIssued">Heriot-Watt Univeristy</p>
+            <p className="cardIssued">{credential?.issuer || 'N/A'}</p>
           </div>
         </div>
       </main>

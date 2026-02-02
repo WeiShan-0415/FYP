@@ -71,7 +71,7 @@ export default function Credential() {
             className="VerifySuccessImg"
           />
           <div className="circleText">
-            <div className="circleNumber">4</div>
+            <div className="circleNumber">{credentials.length}</div>
             <div className="circleLabel">active<br/>credentials</div>
           </div>
         </div>
@@ -118,7 +118,10 @@ export default function Credential() {
                 📜
               </span>
             </div>
-            <div className="cardContent" onClick={() => navigate('/credentialdetails')}>
+            <div
+              className="cardContent"
+              onClick={() => navigate('/credentialdetails', { state: { credential } })}
+            >
               <h4 className="cardName">{credential.title || credential.name}</h4>
               <p className="cardIssued">Type: {credential.type}</p>
               <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>
