@@ -381,23 +381,28 @@ export default async function handler(req, res) {
             let attributeName;
             try {
               attributeName = ethers.decodeBytes32String(event.args.name);
+              console.log('Attribute name:', attributeName);
             } catch {
               attributeName = event.args.name; // Fallback to hex if not a string
+              console.log('Attribute name (hex):', attributeName);
             }
 
             // 2. Decode and Clean Value
             const rawValue = ethers.toUtf8String(event.args.value);
+            console.log('Raw value:', rawValue);
             let cleanValue = rawValue.startsWith('"') && rawValue.endsWith('"') 
               ? rawValue.slice(1, -1) 
               : rawValue;
             cleanValue = cleanValue.replace(/\\"/g, '"');
+            console.log('Clean value:', cleanValue);
 
             // 3. Parse JSON
             const data = JSON.parse(cleanValue);
+            console.log('Parsed data:', data);
 
             // 4. Verification Check: Does it look like a credential?
             if (data.hash && data.subject) {
-              credentials.push({
+              const credentialObj = {
                 id: typeof attributeName === 'string' ? attributeName : `cred/${attributeName.substring(0, 10)}`,
                 subject: data.subject,
                 type: data.type || 'Unknown',
@@ -406,18 +411,36 @@ export default async function handler(req, res) {
                 hash: data.hash,
                 issuer: event.args.identity,
                 blockNumber: event.blockNumber
-              });
+              };
+              console.log('Adding credential to list:', credentialObj);
+              credentials.push(credentialObj);
+            } else {
+              console.log('Skipping event - missing hash or subject:', data);
             }
           } catch (parseError) {
             // Skip events that aren't valid JSON or UTF-8 (common in DID registries)
+            console.log('Parse error on event:', parseError.message);
             continue;
           }
         }
 
+        console.log('\n=== FINAL RESPONSE ===');
+        console.log('Total credentials found:', credentials.length);
+        console.log('Credentials:', JSON.stringify(credentials, null, 2));
+
         return res.status(200).json({
           success: true,
           count: credentials.length,
-          credentials
+          credentials: credentials.map(cred => ({
+            id: cred.id,
+            subject: cred.subject,
+            type: cred.type,
+            title: cred.title,
+            name: cred.name,
+            hash: cred.hash,
+            issuer: cred.issuer,
+            blockNumber: cred.blockNumber
+          }))
         });
       } catch (error) {
         console.error('List credentials error:', error)
