@@ -4,7 +4,6 @@ import { ethers } from "ethers";
 import { useEffect } from 'react';
 
 export default function Login() {
-  const AGENT_ADDRESS = "0x47aEc0f75CE06ce16dCB873894836CBB3E1cEaB0";
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -33,83 +32,7 @@ export default function Login() {
     }
   }, [navigate]);
 
-  // Add this inside your handleMetaMaskLogin function or as a helper
-  const updateUsernameOnChain = async (walletAddress, username) => {
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-
-    const DID_REGISTRY = "0x03d5003bf0e79c5f5223588f347eba39afbc3818";
-    const ABI = [
-      "function setAttribute(address identity, bytes32 name, bytes value, uint validity) external"
-    ];
-
-    const registry = new ethers.Contract(DID_REGISTRY, ABI, signer);
-
-    // Encode the name "did/pub/username"
-    const name = ethers.encodeBytes32String("did/pub/username");
-    const value = ethers.toUtf8Bytes(username);
-    const validity = 86400 * 365 * 10; // 10 years
-
-    console.log("Requesting user to sign username update...");
-    const tx = await registry.setAttribute(walletAddress, name, value, validity);
-    
-    alert("Transaction sent! Please wait for confirmation...");
-    const receipt = await tx.wait();
-    return receipt.hash;
-  };
-  async function checkAgentAuthorization(walletAddress) {
-    if (!window.ethereum) return false;
-
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const DID_REGISTRY = "0x03d5003bf0e79c5f5223588f347eba39afbc3818";
-    const ABI = [
-      "function validDelegate(address identity, bytes32 delegateType, address delegate) external view returns (bool)"
-    ];
-
-    const registry = new ethers.Contract(DID_REGISTRY, ABI, provider);
-    const delegateType = ethers.encodeBytes32String("did/pub/agent");
-
-    try {
-      const isValid = await registry.validDelegate(walletAddress, delegateType, AGENT_ADDRESS);
-      return isValid;
-    } catch (error) {
-      console.error("Error checking delegate:", error);
-      return false;
-    }
-  }
-
-  async function authorizeAgent(walletAddress) {
-    if (!window.ethereum) {
-      alert("MetaMask required");
-      return;
-    }
-
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-
-    const DID_REGISTRY = "0x03d5003bf0e79c5f5223588f347eba39afbc3818";
-    const ABI = [
-      "function addDelegate(address identity, bytes32 delegateType, address delegate, uint validity) external"
-    ];
-
-    const registry = new ethers.Contract(DID_REGISTRY, ABI, signer);
-
-    const delegateType = ethers.encodeBytes32String("did/pub/agent");
-    const validity = 86400 * 365 * 5; // 5 years
-
-    const tx = await registry.addDelegate(
-      walletAddress,
-      delegateType,
-      AGENT_ADDRESS, // user MetaMask authorizes your server
-      validity
-    );
-
-    alert("Authorizing agent...");
-    await tx.wait();
-
-    alert("Agent authorized successfully!");
-  }
-
+  
   const handleMetaMaskLogin = async () => {
     try {
       if (!window.ethereum) {
@@ -145,11 +68,7 @@ export default function Login() {
         localStorage.setItem("username", checkResult.username);
         alert(`Welcome back, ${checkResult.username}!`);
 
-        // Check blockchain to see if agent is already authorized
-        const isAuthorized = await checkAgentAuthorization(walletAddress);
-        if (!isAuthorized) {
-          await authorizeAgent(walletAddress);
-        }
+
 
         // Navigate to homepage
         navigate("/homepage");

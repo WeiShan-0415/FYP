@@ -348,100 +348,77 @@ export default async function handler(req, res) {
         ]
         const contract = new ethers.Contract(DID_REGISTRY, abi, provider)
 
-        // Get all events without filtering by identity to search through all credentials
-        const filter = contract.filters.DIDAttributeChanged()
-        console.log('Using filter: all DIDAttributeChanged events')
+        let filter;
+        if (subjectDID) {
+          // Extract the address if it's in DID format (e.g., did:ethr:0x123...)
+          const address = subjectDID.includes(':') ? subjectDID.split(':').pop() : subjectDID;
+          
+          try {
+            const checksumAddress = ethers.getAddress(address);
+            // This targets the "indexed identity" topic directly at the node level
+            filter = contract.filters.DIDAttributeChanged(checksumAddress);
+            console.log(`Searching logs specifically for identity: ${checksumAddress}`);
+          } catch (e) {
+            return res.status(400).json({ success: false, error: 'Invalid Subject DID/Address format' });
+          }
+        } else {
+          filter = contract.filters.DIDAttributeChanged();
+          console.log('No filter provided. Scanning all DID events (Heavy Operation).');
+        }
 
         const currentBlock = await provider.getBlockNumber()
-        console.log('Current block:', currentBlock, 'Querying from:', Math.max(0, currentBlock - 1000000))
-        
-        const events = await contract.queryFilter(filter, Math.max(0, currentBlock - 1000000), currentBlock)
-        console.log('Total events found:', events.length)
+        const startBlock = Math.max(0, currentBlock - 1000000);
+    
+        // The node now only returns logs that match our 'identity' topic
+        const events = await contract.queryFilter(filter, startBlock, currentBlock);
+        console.log(`Found ${events.length} relevant events.`);
 
         const credentials = []
         
-        for (let i = 0; i < events.length; i++) {
-          const event = events[i]
-          console.log(`\n--- Event ${i + 1}/${events.length} ---`)
-          console.log('Raw name (bytes32):', event.args.name)
-          console.log('Raw value (bytes):', event.args.value)
-          
+      for (const event of events) {
           try {
-            let attributeName = null
-            let isCredential = false
-            
-            // Try to decode as bytes32 string first
+            // 1. Decode Attribute Name (e.g., "cred/degree")
+            let attributeName;
             try {
-              attributeName = ethers.decodeBytes32String(event.args.name)
-              console.log('Decoded attribute name (string):', attributeName)
-              isCredential = attributeName.startsWith('cred/')
-            } catch (decodeError) {
-              // If it's not a valid bytes32 string, it might be a hash
-              // Check if the value looks like credential data
-              console.log('Not a bytes32 string, checking if value is credential data...')
-              attributeName = event.args.name // Use the hash as the name
+              attributeName = ethers.decodeBytes32String(event.args.name);
+            } catch {
+              attributeName = event.args.name; // Fallback to hex if not a string
             }
-            
-            // Try to parse the value as credential data
-            let attributeValue
-            try {
-              attributeValue = ethers.toUtf8String(event.args.value)
-              console.log('Decoded attribute value:', attributeValue)
-            } catch (utf8Error) {
-              console.log('✗ Failed to decode value as UTF-8:', utf8Error.message)
-              // Skip this event if we can't decode it as UTF-8
-              continue
+
+            // 2. Decode and Clean Value
+            const rawValue = ethers.toUtf8String(event.args.value);
+            let cleanValue = rawValue.startsWith('"') && rawValue.endsWith('"') 
+              ? rawValue.slice(1, -1) 
+              : rawValue;
+            cleanValue = cleanValue.replace(/\\"/g, '"');
+
+            // 3. Parse JSON
+            const data = JSON.parse(cleanValue);
+
+            // 4. Verification Check: Does it look like a credential?
+            if (data.hash && data.subject) {
+              credentials.push({
+                id: typeof attributeName === 'string' ? attributeName : `cred/${attributeName.substring(0, 10)}`,
+                subject: data.subject,
+                type: data.type || 'Unknown',
+                title: data.degree || data.title || 'Untitled Credential',
+                name: data.name,
+                hash: data.hash,
+                issuer: event.args.identity,
+                blockNumber: event.blockNumber
+              });
             }
-            
-            // Remove quotes and unescape if needed
-            let cleanValue = attributeValue
-            if (cleanValue.startsWith('"') && cleanValue.endsWith('"')) {
-              cleanValue = cleanValue.slice(1, -1)
-            }
-            cleanValue = cleanValue.replace(/\\"/g, '"')
-            
-            console.log('Clean value:', cleanValue)
-            
-            try {
-              const credentialData = JSON.parse(cleanValue)
-              console.log('Parsed credential data:', credentialData)
-              
-              // If it has credential fields, treat it as a credential
-              if (credentialData.hash && credentialData.subject && credentialData.type) {
-                // Check if this credential matches the requested subject DID
-                if (!subjectDID || credentialData.subject === subjectDID) {
-                  credentials.push({
-                    id: typeof attributeName === 'string' ? attributeName : `cred/${attributeName.substring(2, 20)}`,
-                    did: credentialData.subject,
-                    type: credentialData.type,
-                    title: credentialData.degree,
-                    name: credentialData.name,
-                    hash: credentialData.hash,
-                    issuerAddress: event.args.identity
-                  })
-                  console.log('✓ Credential added to list')
-                } else {
-                  console.log('✗ Credential subject does not match filter')
-                }
-              } else {
-                console.log('✗ Not a credential (missing required fields)')
-              }
-            } catch (jsonError) {
-              console.log('✗ Not valid JSON:', jsonError.message)
-            }
-          } catch (error) {
-            console.log('✗ Error processing event:', error.message)
+          } catch (parseError) {
+            // Skip events that aren't valid JSON or UTF-8 (common in DID registries)
+            continue;
           }
         }
 
-        console.log('Credentials found:', credentials.length)
-
         return res.status(200).json({
           success: true,
-          credentials: credentials,
-          count: credentials.length
-        })
-
+          count: credentials.length,
+          credentials
+        });
       } catch (error) {
         console.error('List credentials error:', error)
         return res.status(500).json({ error: error.message })
