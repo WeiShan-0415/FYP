@@ -383,8 +383,15 @@ export default async function handler(req, res) {
             }
             
             // Try to parse the value as credential data
-            const attributeValue = ethers.toUtf8String(event.args.value)
-            console.log('Decoded attribute value:', attributeValue)
+            let attributeValue
+            try {
+              attributeValue = ethers.toUtf8String(event.args.value)
+              console.log('Decoded attribute value:', attributeValue)
+            } catch (utf8Error) {
+              console.log('✗ Failed to decode value as UTF-8:', utf8Error.message)
+              // Skip this event if we can't decode it as UTF-8
+              continue
+            }
             
             // Remove quotes and unescape if needed
             let cleanValue = attributeValue
