@@ -1,17 +1,40 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
+import {useRef} from 'react';
 
 
 export default function credentialDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
+  const qrRef = useRef();
   const credential = state?.credential;
   const formatMiddleEllipsis = (value, start = 40, end = 4) => {
     if (!value || typeof value !== 'string') return 'N/A';
     if (value.length <= start + end + 3) return value;
     return `${value.slice(0, start)}...${value.slice(-end)}`;
   };
+  useEffect(() => {
+      if (credential && qrRef.current) {
+        const qrCode = new QRCodeStyling({
+          width: 200,
+          height: 200,
+          data: `DID: ${credential.id}`,
+          margin: 10,
+          qrOptions: {
+            typeNumber: 0,
+            mode: 'Byte',
+            errorCorrectionLevel: 'H'
+          },
+          imageOptions: {
+            hideBackgroundDots: true,
+            imageSize: 0.4,
+            margin: 0
+          }
+        });
+        qrCode.append(qrRef.current);
+      }
+    }, [credential]);
   return (
     <div className="appShell">
       {/* Top header */}
@@ -32,11 +55,7 @@ export default function credentialDetails() {
         <div className="didHeader">
           <div className="credentialDetails">
             <div className="didIcon">
-            <img
-              src='/qrcode.png'
-              alt="Share Icon"
-              className='shareDIDImage'
-            />
+            <div ref={qrRef}></div>
             </div>
           </div>
           <h3 className="didTitle">Your Verifiable Credential</h3>
@@ -72,7 +91,7 @@ export default function credentialDetails() {
         </div><div className="credentialCard" style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">Issuer</h4>
-            <p className="cardIssued">did:ethr:sepolia:{formatMiddleEllipsis(credential?.issuerAddress) || 'N/A'}</p>
+            <p className="cardIssued">did:ethr:sepolia:{formatMiddleEllipsis(credential?.issuerAddress)}</p>
           </div>
         </div>
       </main>
