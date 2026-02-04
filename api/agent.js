@@ -459,7 +459,6 @@ export default async function handler(req, res) {
             }
             cleanValue = cleanValue.replace(/\\"/g, '"')
             
-            console.log('Clean value:', cleanValue)
             
             try {
               const credentialData = JSON.parse(cleanValue)
@@ -484,6 +483,10 @@ export default async function handler(req, res) {
                     hash: credentialData.hash,
                     issuerAddress: event.args.identity
                   })
+                  console.log('credentialData.subject:', credentialData.subject)
+                  console.log('credential type:', credentialData.type)
+                  console.log('credential title:', credentialData.degree)
+                  console.log('credential name:', credentialData.name)
                   console.log('✓ Credential added to list')
                 } else {
                   console.log('✗ Credential ID does not match filter')
@@ -492,7 +495,7 @@ export default async function handler(req, res) {
                 console.log('✗ Not a credential (missing required fields)')
               }
             } catch (jsonError) {
-              console.log('✗ Not valid JSON:', jsonError.message)
+              continue
             }
           } catch (error) {
             console.log('✗ Error processing event:', error.message)
