@@ -40,7 +40,7 @@ export default function PostVSuccess() {
             </div>
           </div>
           <div className="VerifyText">
-            <div className="circleNumber">✓</div>
+            <div className="circleNumber" style={{marginTop:"10px"}}>✓</div>
             <div className="circleLabel">Verification<br/>Sucessful</div>
           </div>
           </div>
@@ -61,12 +61,6 @@ export default function PostVSuccess() {
           </div>
         </div>
 
-        <div className="credentialCard"style={{marginTop: "0px"}}>
-          <div className="cardContent" style={{textAlign: "Left"}}>
-            <h4 className="cardName">Status</h4>
-            <p className="cardIssued">Verified</p>
-          </div>
-        </div>
       </main>
       <TabBar />
     </div>
