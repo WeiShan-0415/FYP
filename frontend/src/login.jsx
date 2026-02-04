@@ -65,7 +65,6 @@ export default function Login() {
         }
         
         localStorage.setItem("username", checkResult.username);
-        alert(`Welcome back, ${checkResult.username}!`);
 
         // Navigate to homepage
         navigate("/homepage");
