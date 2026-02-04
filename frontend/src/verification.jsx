@@ -42,7 +42,7 @@ export default function Verification() {
                   alt="QR Code"
                 />
           </div>
-          <div className="cardContent"style={{textAlign: "Left"}} >
+          <div className="cardContent"style={{textAlign: "Left"}}  onClick={() => navigate('/qrscanner')}>
             <h4 className="cardName">QR Code Scan</h4>
             <p className="cardIssued">Use Camera to scan</p>
           </div>
