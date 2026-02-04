@@ -12,6 +12,9 @@ export default function PostVSuccess() {
     did: 'did:ethr:sepolia:0x...'
   });
 
+  // Check if this is a credential verification (has id and type fields)
+  const isCredentialVerification = credential.id && credential.type;
+
   return (
     <div className="appShell">
       {/* Top header */}
@@ -45,21 +48,67 @@ export default function PostVSuccess() {
           </div>
           </div>
           </div>
-          <div className="credentialCard"style={{marginTop:"-50px",marginBottom:"0px"}}>
-          <div className="cardContent"style={{textAlign: "Left"}}>
-            <h4 className="cardName">Name</h4>
-            <p className="cardIssued">{credential.name || 'User Name'}</p>
-          </div>
-        </div>
 
-        <div className="credentialCard">
-          <div className="cardContent" style={{textAlign: "Left"}}>
-            <h4 className="cardName">DID</h4>
-            <p className="cardIssued" style={{fontSize: "12px"}}>
-              did:ethr:sepolia:{credential.did}
-            </p>
-          </div>
-        </div>
+          {isCredentialVerification ? (
+            <>
+              <div className="credentialCard"style={{marginTop:"-50px",marginBottom:"0px"}}>
+                <div className="cardContent"style={{textAlign: "Left"}}>
+                  <h4 className="cardName">Name</h4>
+                  <p className="cardIssued">{credential.name || 'N/A'}</p>
+                </div>
+              </div>
+
+              <div className="credentialCard">
+                <div className="cardContent" style={{textAlign: "Left"}}>
+                  <h4 className="cardName">Credential ID</h4>
+                  <p className="cardIssued" style={{fontSize: "12px"}}>
+                    {credential.id || 'N/A'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="credentialCard">
+                <div className="cardContent" style={{textAlign: "Left"}}>
+                  <h4 className="cardName">Credential Type</h4>
+                  <p className="cardIssued">{credential.type || 'N/A'}</p>
+                </div>
+              </div>
+
+              <div className="credentialCard">
+                <div className="cardContent" style={{textAlign: "Left"}}>
+                  <h4 className="cardName">Title</h4>
+                  <p className="cardIssued">{credential.title || 'N/A'}</p>
+                </div>
+              </div>
+
+              <div className="credentialCard">
+                <div className="cardContent" style={{textAlign: "Left"}}>
+                  <h4 className="cardName">Issuer</h4>
+                  <p className="cardIssued" style={{fontSize: "12px"}}>
+                    {credential.issuerAddress || 'N/A'}
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="credentialCard"style={{marginTop:"-50px",marginBottom:"0px"}}>
+                <div className="cardContent"style={{textAlign: "Left"}}>
+                  <h4 className="cardName">Name</h4>
+                  <p className="cardIssued">{credential.name || 'User Name'}</p>
+                </div>
+              </div>
+
+              <div className="credentialCard">
+                <div className="cardContent" style={{textAlign: "Left"}}>
+                  <h4 className="cardName">DID</h4>
+                  <p className="cardIssued" style={{fontSize: "12px"}}>
+                    did:ethr:sepolia:{credential.did}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
 
       </main>
       <TabBar />
