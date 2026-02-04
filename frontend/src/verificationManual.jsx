@@ -5,8 +5,95 @@ import TabBar from './TabBar';
 
 
 export default function VerificationManual() {
+  const [verifyType, setVerifyType] = useState(null); // 'did' or 'credential'
   const [credentialId, setCredentialId] = useState('');
+  const [username, setUsername] = useState('');
+  const [did, setDid] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const handleVerifyDID = async () => {
+    setError('');
+    
+    if (!username.trim()) {
+      setError('Please enter username');
+      return;
+    }
+    
+    if (!did.trim()) {
+      setError('Please enter DID');
+      return;
+    }
+
+    try {
+      // Extract wallet address from DID (did:ethr:sepolia:0x...)
+      const didParts = did.split(':');
+      const walletAddress = didParts[3];
+
+      if (!walletAddress) {
+        setError('Invalid DID format. Expected: did:ethr:sepolia:0x...');
+        return;
+      }
+
+      const response = await fetch('/api/agent/check-did-with-username', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          walletAddress: walletAddress,
+          username: username.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Verification failed');
+        return;
+      }
+
+      if (data.exists && data.usernameMatch) {
+        navigate('/postvsuccess', { state: { credential: { name: username, did: walletAddress } } });
+      } else {
+        setError('Verification failed. User or credential not found.');
+        navigate('/postvfail');
+      }
+    } catch (err) {
+      setError('Error verifying DID: ' + err.message);
+      console.error('Verification error:', err);
+    }
+  };
+
+  const handleVerifyCredential = async () => {
+    setError('');
+    
+    if (!credentialId.trim()) {
+      setError('Please enter credential ID');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/agent/verify-credentials?credentialID=${encodeURIComponent(credentialId.trim())}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Verification failed');
+        return;
+      }
+
+      if (data.success && Array.isArray(data.credentials) && data.credentials.length > 0) {
+        navigate('/postvsuccess', { state: { credential: data.credentials[0] } });
+      } else {
+        setError('Verification failed. Credential not found.');
+        navigate('/postvfail');
+      }
+    } catch (err) {
+      setError('Error verifying credential: ' + err.message);
+      console.error('Verification error:', err);
+    }
+  };
+
   return (
     <div className="appShell">
       {/* Top header */}
@@ -33,19 +120,144 @@ export default function VerificationManual() {
         </div>
       </div>
       <main className="homeCards">
-        <div className="titleWithBadge">
-          <h5 className="credentialTitle">Manual Entry</h5>
-        </div>
-        <div className="credentialInputSection">
-          <h3 className="inputLabel">Enter Credential ID</h3>
-          <input
-            type="text"
-            className="credentialInput"
-            placeholder="Enter your credential ID"
-            value={credentialId}
-            onChange={(e) => setCredentialId(e.target.value)}
-          />
-        </div>
+        {!verifyType ? (
+          <>
+            <div className="titleWithBadge">
+              <h5 className="credentialTitle">Choose Verification Type</h5>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', padding: '20px' }}>
+              <button
+                className="buttonContainer"
+                onClick={() => {
+                  setVerifyType('did');
+                  setError('');
+                  setCredentialId('');
+                  setUsername('');
+                  setDid('');
+                }}
+                style={{ marginTop: '10px' }}
+              >
+                <span className="buttonText">Verify DID</span>
+              </button>
+              <button
+                className="buttonContainer"
+                onClick={() => {
+                  setVerifyType('credential');
+                  setError('');
+                  setCredentialId('');
+                  setUsername('');
+                  setDid('');
+                }}
+              >
+                <span className="buttonText">Verify Credential</span>
+              </button>
+            </div>
+          </>
+        ) : verifyType === 'did' ? (
+          <>
+            <div className="titleWithBadge">
+              <h5 className="credentialTitle">Verify DID</h5>
+            </div>
+            {error && (
+              <div
+                style={{
+                  backgroundColor: '#ff6b6b',
+                  color: 'white',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  marginBottom: '20px',
+                  marginLeft: '20px',
+                  marginRight: '20px',
+                  textAlign: 'center',
+                }}
+              >
+                {error}
+              </div>
+            )}
+            <div className="credentialInputSection">
+              <h3 className="inputLabel">Username</h3>
+              <input
+                type="text"
+                className="credentialInput"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div className="credentialInputSection">
+              <h3 className="inputLabel">DID</h3>
+              <input
+                type="text"
+                className="credentialInput"
+                placeholder="Enter your DID (e.g., did:ethr:sepolia:0x...)"
+                value={did}
+                onChange={(e) => setDid(e.target.value)}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', padding: '20px' }}>
+              <button
+                className="buttonContainer"
+                onClick={handleVerifyDID}
+              >
+                <span className="buttonText">Verify</span>
+              </button>
+              <button
+                className="buttonContainer"
+                onClick={() => setVerifyType(null)}
+                style={{ backgroundColor: '#999' }}
+              >
+                <span className="buttonText">Back</span>
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="titleWithBadge">
+              <h5 className="credentialTitle">Verify Credential</h5>
+            </div>
+            {error && (
+              <div
+                style={{
+                  backgroundColor: '#ff6b6b',
+                  color: 'white',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  marginBottom: '20px',
+                  marginLeft: '20px',
+                  marginRight: '20px',
+                  textAlign: 'center',
+                }}
+              >
+                {error}
+              </div>
+            )}
+            <div className="credentialInputSection">
+              <h3 className="inputLabel">Enter Credential ID</h3>
+              <input
+                type="text"
+                className="credentialInput"
+                placeholder="Enter your credential ID"
+                value={credentialId}
+                onChange={(e) => setCredentialId(e.target.value)}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', padding: '20px' }}>
+              <button
+                className="buttonContainer"
+                onClick={handleVerifyCredential}
+              >
+                <span className="buttonText">Verify</span>
+              </button>
+              <button
+                className="buttonContainer"
+                onClick={() => setVerifyType(null)}
+                style={{ backgroundColor: '#999' }}
+              >
+                <span className="buttonText">Back</span>
+              </button>
+            </div>
+          </>
+        )}
       </main>
       <TabBar />
     </div>
