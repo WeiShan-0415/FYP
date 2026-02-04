@@ -62,7 +62,7 @@ export default function PostVSuccess() {
                 <div className="cardContent" style={{textAlign: "Left"}}>
                   <h4 className="cardName">Credential ID</h4>
                   <p className="cardIssued" style={{fontSize: "12px"}}>
-                    {credential.id || 'N/A'}
+                    {credential.id ? (`${credential.id.substring(0, 40)}...${credential.id.substring(credential.id.length - 4)}`) : 'N/A'}
                   </p>
                 </div>
               </div>
