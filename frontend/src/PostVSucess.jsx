@@ -1,11 +1,17 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
 
 
 export default function PostVSuccess() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [credential] = useState(location.state?.credential || {
+    name: 'User Name',
+    did: 'did:ethr:sepolia:0x...'
+  });
+
   return (
     <div className="appShell">
       {/* Top header */}
@@ -42,26 +48,23 @@ export default function PostVSuccess() {
           <div className="credentialCard"style={{marginTop:"-50px",marginBottom:"0px"}}>
           <div className="cardContent"style={{textAlign: "Left"}}>
             <h4 className="cardName">Name</h4>
-            <p className="cardIssued">Foo Wei Shan</p>
+            <p className="cardIssued">{credential.name || 'User Name'}</p>
           </div>
         </div>
 
         <div className="credentialCard">
           <div className="cardContent" style={{textAlign: "Left"}}>
-            <h4 className="cardName">Credential Type </h4>
-            <p className="cardIssued">University Certification</p>
+            <h4 className="cardName">DID</h4>
+            <p className="cardIssued" style={{fontSize: "12px", wordBreak: "break-all"}}>
+              {credential.did || 'did:ethr:sepolia:0x...'}
+            </p>
           </div>
         </div>
 
         <div className="credentialCard"style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
-            <h4 className="cardName">Title </h4>
-            <p className="cardIssued">Computing Science</p>
-          </div>
-        </div><div className="credentialCard"style={{marginTop: "0px"}}>
-          <div className="cardContent" style={{textAlign: "Left"}}>
-            <h4 className="cardName">Issuer</h4>
-            <p className="cardIssued">Heriot-Watt Univeristy</p>
+            <h4 className="cardName">Status</h4>
+            <p className="cardIssued">Verified</p>
           </div>
         </div>
       </main>

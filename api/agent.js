@@ -177,6 +177,95 @@ export default async function handler(req, res) {
         return res.status(200).json({ exists: false, did: did })
       }
 
+     if (path === '/api/agent/check-did-with-username' && method === 'POST') {
+        const { walletAddress, username } = req.body
+        
+        if (!walletAddress) {
+          return res.status(400).json({ error: 'walletAddress is required' })
+        }
+
+        if (!username) {
+          return res.status(400).json({ error: 'username is required' })
+        }
+
+        const did = `did:ethr:sepolia:${walletAddress}`
+        
+        try {
+          const { ethers } = await import('ethers')
+          const rpcUrl = process.env.ETH_RPC_URL || `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+          const provider = new ethers.JsonRpcProvider(rpcUrl)
+          
+          const DID_REGISTRY = '0x03d5003bf0e79c5f5223588f347eba39afbc3818'
+          const abi = [
+            'function identityOwner(address identity) public view returns (address)',
+            'event DIDAttributeChanged(address indexed identity, bytes32 name, bytes value, uint validTo, uint previousChange)'
+          ]
+          const contract = new ethers.Contract(DID_REGISTRY, abi, provider)
+
+          // Check if the DID exists
+          const owner = await contract.identityOwner(walletAddress)
+          
+          if (owner === '0x0000000000000000000000000000000000000000') {
+            return res.status(200).json({
+              exists: false,
+              usernameMatch: false,
+              did: did,
+              message: 'DID does not exist on blockchain'
+            })
+          }
+
+          // DID exists, now check for username attribute
+          let storedUsername = null
+          let usernameMatch = false
+
+          try {
+            const currentBlock = await provider.getBlockNumber()
+            const filter = contract.filters.DIDAttributeChanged(walletAddress)
+            const events = await contract.queryFilter(filter, Math.max(0, currentBlock - 1000000), currentBlock)
+            
+            if (events.length > 0) {
+              const sortedEvents = events.sort((a, b) => a.blockNumber - b.blockNumber)
+              
+              // Look for username attribute in all events
+              for (const event of sortedEvents) {
+                try {
+                  const attributeName = ethers.decodeBytes32String(event.args.name)
+                  if (attributeName === 'did/pub/username') {
+                    storedUsername = ethers.toUtf8String(event.args.value)
+                    console.log('Found username on blockchain:', storedUsername)
+                    break
+                  }
+                } catch (decodeError) {
+                  // Skip events that can't be decoded
+                }
+              }
+            }
+          } catch (eventError) {
+            console.error("Failed to fetch blockchain data:", eventError)
+          }
+
+          // Compare username
+          usernameMatch = storedUsername === username.trim()
+
+          return res.status(200).json({
+            exists: true,
+            usernameMatch: usernameMatch,
+            did: did,
+            owner: owner,
+            providedUsername: username.trim(),
+            storedUsername: storedUsername,
+            message: usernameMatch ? 'Username matches stored DID' : 'Username does not match stored DID'
+          })
+
+        } catch (error) {
+          console.error("DID username check failed:", error)
+          return res.status(500).json({ 
+            error: error.message || 'Failed to check DID with username' 
+          })
+        }
+      }
+
+    
     if (path === '/api/agent/update-did' && method === 'POST') {
       const { walletAddress, username, txHash } = req.body;
 

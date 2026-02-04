@@ -15,6 +15,7 @@ import History from './history.jsx'
 import ProfileDetails from './profileDetail.jsx'
 import Login from './login.jsx'
 import Registration from './registration.jsx'
+import QRScanner from './qrScanner.jsx'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/credential" element={<Credential />} />
         <Route path="/didpage" element={<DidPage />} />
         <Route path="/verification" element={<Verification />} />
+        <Route path="/qrscanner" element={<QRScanner />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/sharedid" element={<ShareDid />} />
         <Route path="/postvsuccess" element={<PostVSuccess />} />
