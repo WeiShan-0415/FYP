@@ -40,7 +40,7 @@ export default function PostVSuccess() {
             </div>
           </div>
           <div className="VerifyText">
-            <div className="circleNumber" style={{marginTop:"10px"}}>✓</div>
+            <div className="circleNumber" style={{marginTop:"25px"}}>✓</div>
             <div className="circleLabel">Verification<br/>Sucessful</div>
           </div>
           </div>
