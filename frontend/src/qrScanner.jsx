@@ -10,6 +10,13 @@ export default function QRScanner() {
   const [error, setError] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach((track) => track.stop());
+      videoRef.current.srcObject = null;
+    }
+  };
 
   useEffect(() => {
     const startCamera = async () => {
@@ -32,10 +39,7 @@ export default function QRScanner() {
     startCamera();
 
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const tracks = videoRef.current.srcObject.getTracks();
-        tracks.forEach((track) => track.stop());
-      }
+      stopCamera();
     };
   }, []);
 
@@ -89,8 +93,9 @@ export default function QRScanner() {
                   return;
                 }
 
-                // Stop scanning
+                // Stop scanning and camera stream
                 setIsScanning(false);
+                stopCamera();
 
                 // Call the check-did-with-username endpoint
                 verifyUserWithDID(walletAddress, name);
@@ -138,7 +143,7 @@ export default function QRScanner() {
       // Check if DID exists and username matches
       if (data.exists && data.usernameMatch) {
         // Verification successful - navigate to success page
-        navigate('/postvsuccess', { state: { credential: { name, did: walletAddress } } });
+        navigate('/postvsuccess', { state: { credential: { name: username, did: walletAddress } } });
       } else {
         // Verification failed
         setError('Verification failed. User or credential not found.');
