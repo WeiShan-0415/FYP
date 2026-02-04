@@ -125,7 +125,7 @@ export default function VerificationManual() {
             <div className="titleWithBadge">
               <h5 className="credentialTitle">Choose Verification Type</h5>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', padding: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '20px', width: '100%' }}>
               <button
                 className="buttonContainer"
                 onClick={() => {
@@ -135,7 +135,7 @@ export default function VerificationManual() {
                   setUsername('');
                   setDid('');
                 }}
-                style={{ marginTop: '10px' }}
+                style={{ width: '100%', marginTop: '20px' }}
               >
                 <span className="buttonText">Verify DID</span>
               </button>
@@ -148,6 +148,7 @@ export default function VerificationManual() {
                   setUsername('');
                   setDid('');
                 }}
+                style={{ width: '100%' }}
               >
                 <span className="buttonText">Verify Credential</span>
               </button>
