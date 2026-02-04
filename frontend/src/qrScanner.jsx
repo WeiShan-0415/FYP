@@ -43,50 +43,55 @@ export default function QRScanner() {
     if (!isScanning || !videoRef.current) return;
 
     const scanQRCode = () => {
-      if (videoRef.current && canvasRef.current) {
+      if (videoRef.current && canvasRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
 
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
+        const videoWidth = videoRef.current.videoWidth;
+        const videoHeight = videoRef.current.videoHeight;
 
-        ctx.drawImage(videoRef.current, 0, 0);
+        // Only proceed if video has valid dimensions
+        if (videoWidth > 0 && videoHeight > 0) {
+          canvas.width = videoWidth;
+          canvas.height = videoHeight;
 
-        const imageData = ctx.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
+          ctx.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight);
 
-        if (code) {
           try {
-            // Parse QR code data
-            const qrData = JSON.parse(code.data);
-            const { name, did } = qrData;
+            const imageData = ctx.getImageData(0, 0, videoWidth, videoHeight);
+            const code = jsQR(imageData.data, videoWidth, videoHeight);
 
-            if (!name || !did) {
-              setError('Invalid QR code format. Missing name or DID.');
-              return;
+            if (code) {
+              try {
+                // Parse QR code data
+                const qrData = JSON.parse(code.data);
+                const { name, did } = qrData;
+
+                if (!name || !did) {
+                  setError('Invalid QR code format. Missing name or DID.');
+                  return;
+                }
+
+                // Extract wallet address from DID (did:ethr:sepolia:0x...)
+                const walletAddress = did.split(':')[3];
+
+                if (!walletAddress) {
+                  setError('Invalid DID format.');
+                  return;
+                }
+
+                // Stop scanning
+                setIsScanning(false);
+
+                // Call the check-did-with-username endpoint
+                verifyUserWithDID(walletAddress, name);
+              } catch (parseError) {
+                setError('Invalid QR code data format.');
+                console.error('QR code parse error:', parseError);
+              }
             }
-
-            // Extract wallet address from DID (did:ethr:sepolia:0x...)
-            const walletAddress = did.split(':')[3];
-
-            if (!walletAddress) {
-              setError('Invalid DID format.');
-              return;
-            }
-
-            // Stop scanning
-            setIsScanning(false);
-
-            // Call the check-did-with-username endpoint
-            verifyUserWithDID(walletAddress, name);
-          } catch (parseError) {
-            setError('Invalid QR code data format.');
-            console.error('QR code parse error:', parseError);
+          } catch (err) {
+            console.error('Canvas error:', err);
           }
         }
       }
@@ -182,21 +187,25 @@ export default function QRScanner() {
           style={{
             position: 'relative',
             width: '100%',
-            maxWidth: '300px',
+            maxWidth: '100%',
             margin: '0 auto',
             borderRadius: '8px',
             overflow: 'hidden',
             border: '2px solid #4a90e2',
+            backgroundColor: '#000',
+            aspectRatio: '1 / 1',
           }}
         >
           <video
             ref={videoRef}
-            autoPlay
-            playsInline
+            autoPlay={true}
+            playsInline={true}
+            muted={true}
             style={{
               width: '100%',
-              height: 'auto',
+              height: '100%',
               display: 'block',
+              objectFit: 'cover',
             }}
           />
           <canvas
