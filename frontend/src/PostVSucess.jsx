@@ -55,8 +55,8 @@ export default function PostVSuccess() {
         <div className="credentialCard">
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">DID</h4>
-            <p className="cardIssued" style={{fontSize: "12px", wordBreak: "break-all"}}>
-              {credential.did || 'did:ethr:sepolia:0x...'}
+            <p className="cardIssued" style={{fontSize: "12px"}}>
+              did:ethr:sepolia:{credential.did}
             </p>
           </div>
         </div>

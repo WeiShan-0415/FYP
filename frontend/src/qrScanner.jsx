@@ -181,7 +181,7 @@ export default function QRScanner() {
         </div>
       </div>
 
-      <main className="qrScannerContainer" style={{ padding: '20px' }}>
+      <main className="tallCards" style={{ padding: '20px' }}>
         {error && (
           <div
             style={{

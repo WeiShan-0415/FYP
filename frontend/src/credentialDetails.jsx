@@ -20,7 +20,7 @@ export default function credentialDetails() {
         const qrCode = new QRCodeStyling({
           width: 200,
           height: 200,
-          data: `DID: ${credential.id}`,
+          data: `Credential: ${credential.id}`,
           margin: 10,
           qrOptions: {
             typeNumber: 0,
