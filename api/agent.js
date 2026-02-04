@@ -398,12 +398,12 @@ export default async function handler(req, res) {
       }
     }
 
-    if (path === '/api/agent/list-credentials' && method === 'GET') {
+    if (path === '/api/agent/verify-credentials' && method === 'GET') {
       try {
         const { ethers } = await import('ethers')
         const url = new URL(req.url, `http://${req.headers.host}`)
-        const subjectDID = url.searchParams.get('subjectDID')
-        console.log('List credentials request. Subject DID filter:', subjectDID)
+        const credentialID = url.searchParams.get('credentialID')
+        console.log('List credentials request. Credential ID filter:', credentialID)
         const rpcUrl = process.env.ETH_RPC_URL || `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
         const provider = new ethers.JsonRpcProvider(rpcUrl)
         
@@ -474,10 +474,16 @@ export default async function handler(req, res) {
               
               // If it has credential fields, treat it as a credential
               if (credentialData.hash && credentialData.subject && credentialData.type) {
-                // Check if this credential matches the requested subject DID
-                if (!subjectDID || credentialData.subject === subjectDID) {
+                const resolvedCredentialId = typeof attributeName === 'string'
+                  ? attributeName
+                  : `cred/${attributeName.substring(2, 20)}`
+                const normalizedFilterId = credentialID && credentialID.startsWith('cred/')
+                  ? credentialID
+                  : (credentialID ? `cred/${credentialID}` : null)
+
+                if (!credentialID || resolvedCredentialId === credentialID || resolvedCredentialId === normalizedFilterId) {
                   credentials.push({
-                    id: typeof attributeName === 'string' ? attributeName : `cred/${attributeName.substring(2, 20)}`,
+                    id: resolvedCredentialId,
                     did: credentialData.subject,
                     type: credentialData.type,
                     title: credentialData.degree,
@@ -487,7 +493,7 @@ export default async function handler(req, res) {
                   })
                   console.log('✓ Credential added to list')
                 } else {
-                  console.log('✗ Credential subject does not match filter')
+                  console.log('✗ Credential ID does not match filter')
                 }
               } else {
                 console.log('✗ Not a credential (missing required fields)')

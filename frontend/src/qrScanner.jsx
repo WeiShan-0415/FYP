@@ -67,18 +67,32 @@ export default function QRScanner() {
 
             if (code) {
               try {
-                // Parse QR code data - format is "Name: USERNAME\nDID: DID_VALUE"
+                // Parse QR code data - formats supported:
+                // "Name: USERNAME\nDID: DID_VALUE" or "Credential: CREDENTIAL_ID"
                 const lines = code.data.split('\n');
                 let name = null;
                 let did = null;
+                let credentialId = null;
 
                 lines.forEach(line => {
                   if (line.startsWith('Name:')) {
                     name = line.replace('Name:', '').trim();
                   } else if (line.startsWith('DID:')) {
                     did = line.replace('DID:', '').trim();
+                  } else if (line.startsWith('Credential:')) {
+                    credentialId = line.replace('Credential:', '').trim();
                   }
                 });
+
+                if (credentialId) {
+                  // Stop scanning and camera stream
+                  setIsScanning(false);
+                  stopCamera();
+
+                  // Call verify-credentials endpoint
+                  verifyCredentialById(credentialId);
+                  return;
+                }
 
                 if (!name || !did) {
                   setError('Invalid QR code format. Missing name or DID.');
@@ -147,6 +161,28 @@ export default function QRScanner() {
       } else {
         // Verification failed
         setError('Verification failed. User or credential not found.');
+        navigate('/postvfail');
+      }
+    } catch (err) {
+      setError('Error verifying credential: ' + err.message);
+      console.error('Verification error:', err);
+    }
+  };
+
+  const verifyCredentialById = async (credentialId) => {
+    try {
+      const response = await fetch(`/api/agent/verify-credentials?credentialID=${encodeURIComponent(credentialId)}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Verification failed');
+        return;
+      }
+
+      if (data.success && Array.isArray(data.credentials) && data.credentials.length > 0) {
+        navigate('/postvsuccess', { state: { credential: data.credentials[0] } });
+      } else {
+        setError('Verification failed. Credential not found.');
         navigate('/postvfail');
       }
     } catch (err) {
