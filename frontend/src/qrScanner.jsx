@@ -63,9 +63,18 @@ export default function QRScanner() {
 
             if (code) {
               try {
-                // Parse QR code data
-                const qrData = JSON.parse(code.data);
-                const { name, did } = qrData;
+                // Parse QR code data - format is "Name: USERNAME\nDID: DID_VALUE"
+                const lines = code.data.split('\n');
+                let name = null;
+                let did = null;
+
+                lines.forEach(line => {
+                  if (line.startsWith('Name:')) {
+                    name = line.replace('Name:', '').trim();
+                  } else if (line.startsWith('DID:')) {
+                    did = line.replace('DID:', '').trim();
+                  }
+                });
 
                 if (!name || !did) {
                   setError('Invalid QR code format. Missing name or DID.');
