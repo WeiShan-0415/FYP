@@ -428,9 +428,6 @@ export default async function handler(req, res) {
         
         for (let i = 0; i < events.length; i++) {
           const event = events[i]
-          console.log(`\n--- Event ${i + 1}/${events.length} ---`)
-          console.log('Raw name (bytes32):', event.args.name)
-          console.log('Raw value (bytes):', event.args.value)
           
           try {
             let attributeName = null
@@ -439,12 +436,10 @@ export default async function handler(req, res) {
             // Try to decode as bytes32 string first
             try {
               attributeName = ethers.decodeBytes32String(event.args.name)
-              console.log('Decoded attribute name (string):', attributeName)
               isCredential = attributeName.startsWith('cred/')
             } catch (decodeError) {
               // If it's not a valid bytes32 string, it might be a hash
               // Check if the value looks like credential data
-              console.log('Not a bytes32 string, checking if value is credential data...')
               attributeName = event.args.name // Use the hash as the name
             }
             
@@ -452,9 +447,7 @@ export default async function handler(req, res) {
             let attributeValue
             try {
               attributeValue = ethers.toUtf8String(event.args.value)
-              console.log('Decoded attribute value:', attributeValue)
             } catch (utf8Error) {
-              console.log('✗ Failed to decode value as UTF-8:', utf8Error.message)
               // Skip this event if we can't decode it as UTF-8
               continue
             }
