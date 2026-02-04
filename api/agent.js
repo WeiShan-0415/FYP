@@ -520,6 +520,119 @@ export default async function handler(req, res) {
       }
     }
 
+    if (path === '/api/agent/list-credentials' && method === 'GET') {
+      try {
+        const { ethers } = await import('ethers')
+        const url = new URL(req.url, `http://${req.headers.host}`)
+        const subjectDID = url.searchParams.get('subjectDID')
+        console.log('List credentials request. Subject DID filter:', subjectDID)
+        const rpcUrl = process.env.ETH_RPC_URL || `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+        const provider = new ethers.JsonRpcProvider(rpcUrl)
+        
+        const DID_REGISTRY = '0x03d5003bf0e79c5f5223588f347eba39afbc3818'
+        const abi = [
+          'function identityOwner(address identity) public view returns (address)',
+          'event DIDAttributeChanged(address indexed identity, bytes32 name, bytes value, uint validTo, uint previousChange)'
+        ]
+        const contract = new ethers.Contract(DID_REGISTRY, abi, provider)
+
+        const filter = contract.filters.DIDAttributeChanged()
+        console.log('Using filter: all events')
+
+        const currentBlock = await provider.getBlockNumber()
+        console.log('Current block:', currentBlock, 'Querying from:', Math.max(0, currentBlock - 1000000))
+        
+        const events = await contract.queryFilter(filter, Math.max(0, currentBlock - 1000000), currentBlock)
+        console.log('Total events found:', events.length)
+
+        const credentials = []
+        
+        for (let i = 0; i < events.length; i++) {
+          const event = events[i]
+          console.log(`\n--- Event ${i + 1}/${events.length} ---`)
+          console.log('Raw name (bytes32):', event.args.name)
+          console.log('Raw value (bytes):', event.args.value)
+          
+          try {
+            let attributeName = null
+            let isCredential = false
+            
+            // Try to decode as bytes32 string first
+            try {
+              attributeName = ethers.decodeBytes32String(event.args.name)
+              console.log('Decoded attribute name (string):', attributeName)
+              isCredential = attributeName.startsWith('cred/')
+            } catch (decodeError) {
+              // If it's not a valid bytes32 string, it might be a hash
+              // Check if the value looks like credential data
+              console.log('Not a bytes32 string, checking if value is credential data...')
+              attributeName = event.args.name // Use the hash as the name
+            }
+            
+            // Try to parse the value as credential data
+            let attributeValue = null
+            try {
+              attributeValue = ethers.toUtf8String(event.args.value)
+              console.log('Decoded attribute value:', attributeValue)
+            } catch (utf8Error) {
+              console.log('✗ Value is not valid UTF-8, skipping:', utf8Error.message)
+              continue // Skip this event if it's not valid UTF-8
+            }
+            
+            // Remove quotes and unescape if needed
+            let cleanValue = attributeValue
+            if (cleanValue.startsWith('"') && cleanValue.endsWith('"')) {
+              cleanValue = cleanValue.slice(1, -1)
+            }
+            cleanValue = cleanValue.replace(/\\"/g, '"')
+            
+            console.log('Clean value:', cleanValue)
+            
+            try {
+              const credentialData = JSON.parse(cleanValue)
+              console.log('Parsed credential data:', credentialData)
+              
+              // If it has credential fields, treat it as a credential
+              if (credentialData.hash && credentialData.subject && credentialData.type) {
+                if (!subjectDID || credentialData.subject === subjectDID) {
+                  credentials.push({
+                    id: typeof attributeName === 'string' ? attributeName : `cred/${attributeName.substring(2, 20)}`,
+                    did: credentialData.subject,
+                    type: credentialData.type,
+                    title: credentialData.degree,
+                    name: credentialData.name,
+                    hash: credentialData.hash,
+                    issuerAddress: event.args.identity
+                  })
+                  console.log('✓ Credential added to list')
+                } else {
+                  console.log('✗ Credential subject does not match filter')
+                }
+              } else {
+                console.log('✗ Not a credential (missing required fields)')
+              }
+            } catch (jsonError) {
+              console.log('✗ Not valid JSON:', jsonError.message)
+            }
+          } catch (error) {
+            console.log('✗ Error processing event:', error.message)
+          }
+        }
+
+        console.log('Credentials found:', credentials.length)
+
+        return res.status(200).json({
+          success: true,
+          credentials: credentials,
+          count: credentials.length
+        })
+
+      } catch (error) {
+        console.error('List credentials error:', error)
+        return res.status(500).json({ error: error.message })
+      }
+    }
+
     res.status(404).json({ error: 'not found' })
   } catch (err) {
     console.error('Agent error:', err)
