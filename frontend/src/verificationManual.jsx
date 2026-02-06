@@ -137,7 +137,7 @@ export default function VerificationManual() {
                 }}
               >
                 <img className="button" src="/button.png" alt="Verify DID background" />
-                <span className="buttonText"style={{margin:'10px'}}>Verify DID</span>
+                <span className="buttonText">Verify DID</span>
               </button>
               <button
                 className="buttonContainer"
@@ -150,7 +150,7 @@ export default function VerificationManual() {
                 }}
               >
                 <img className="button" src="/button.png" alt="Verify Credential background" />
-                <span className="buttonText" style={{margin:'10px'}}>Verify Credential</span>
+                <span className="buttonText">Verify Credential</span>
               </button>
             </div>
           </>
