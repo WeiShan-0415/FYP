@@ -176,11 +176,11 @@ export default function VerificationManual() {
               </div>
             )}
             <div className="credentialInputSection">
-              <h3 className="inputLabel">Username</h3>
+              <h3 className="inputLabel">Name</h3>
               <input
                 type="text"
                 className="credentialInput"
-                placeholder="Enter your username"
+                placeholder="Enter your name"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -200,6 +200,7 @@ export default function VerificationManual() {
                 className="buttonContainer"
                 onClick={handleVerifyDID}
               >
+                <img className="button" src="/button.png" alt="verify" />
                 <span className="buttonText">Verify</span>
               </button>
               <button
@@ -207,6 +208,7 @@ export default function VerificationManual() {
                 onClick={() => setVerifyType(null)}
                 style={{ backgroundColor: '#999' }}
               >
+                <img className="button" src="/button.png" alt="Share Icon" />
                 <span className="buttonText">Back</span>
               </button>
             </div>
@@ -247,6 +249,7 @@ export default function VerificationManual() {
                 className="buttonContainer"
                 onClick={handleVerifyCredential}
               >
+                <img className="button" src="/button.png" alt="verify" />
                 <span className="buttonText">Verify</span>
               </button>
               <button
@@ -254,6 +257,7 @@ export default function VerificationManual() {
                 onClick={() => setVerifyType(null)}
                 style={{ backgroundColor: '#999' }}
               >
+                <img className="button" src="/button.png" alt="Icon" />
                 <span className="buttonText">Back</span>
               </button>
             </div>
