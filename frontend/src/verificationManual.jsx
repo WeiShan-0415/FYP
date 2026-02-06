@@ -135,9 +135,9 @@ export default function VerificationManual() {
                   setUsername('');
                   setDid('');
                 }}
-                style={{ marginTop: '20px', backgroundColor: '#D8E4E8' }}
               >
-                <span className="buttonText">Verify DID</span>
+                <img className="button" src="/button.png" alt="Verify DID background" />
+                <span className="buttonText"style={{margin:'10px'}}>Verify DID</span>
               </button>
               <button
                 className="buttonContainer"
@@ -148,9 +148,9 @@ export default function VerificationManual() {
                   setUsername('');
                   setDid('');
                 }}
-                style={{ backgroundColor: '#D8E4E8' }}
               >
-                <span className="buttonText">Verify Credential</span>
+                <img className="button" src="/button.png" alt="Verify Credential background" />
+                <span className="buttonText" style={{margin:'10px'}}>Verify Credential</span>
               </button>
             </div>
           </>
