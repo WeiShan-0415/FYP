@@ -203,14 +203,6 @@ export default function VerificationManual() {
                 <img className="button" src="/button.png" alt="verify" />
                 <span className="buttonText">Verify</span>
               </button>
-              <button
-                className="buttonContainer"
-                onClick={() => setVerifyType(null)}
-                style={{ backgroundColor: '#999' }}
-              >
-                <img className="button" src="/button.png" alt="Share Icon" />
-                <span className="buttonText">Back</span>
-              </button>
             </div>
           </>
         ) : (
@@ -251,14 +243,6 @@ export default function VerificationManual() {
               >
                 <img className="button" src="/button.png" alt="verify" />
                 <span className="buttonText">Verify</span>
-              </button>
-              <button
-                className="buttonContainer"
-                onClick={() => setVerifyType(null)}
-                style={{ backgroundColor: '#999' }}
-              >
-                <img className="button" src="/button.png" alt="Icon" />
-                <span className="buttonText">Back</span>
               </button>
             </div>
           </>
