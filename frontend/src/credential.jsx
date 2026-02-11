@@ -35,6 +35,8 @@ export default function Credential() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const activeCredentialsCount = credentials.filter(cred => cred.status !== 'revoked').length;
+
   useEffect(() => {
     const fetchCredentials = async () => {
       try {
@@ -97,7 +99,7 @@ export default function Credential() {
             className="VerifySuccessImg"
           />
           <div className="circleText">
-            <div className="circleNumber">{credentials.length}</div>
+            <div className="circleNumber">{activeCredentialsCount}</div>
             <div className="circleLabel">active<br/>credentials</div>
           </div>
         </div>
@@ -105,7 +107,7 @@ export default function Credential() {
       <main className="homeCards">
         <div className="titleWithBadge">
           <h5 className="credentialTitle">Total</h5>
-          <span className="totalBadge">{credentials.length}</span>
+          <span className="totalBadge">{activeCredentialsCount}</span>
         </div>
 
         {loading && (
@@ -155,7 +157,7 @@ export default function Credential() {
               )}
             </div>
             <span className={`cardStatus ${credential.status === 'revoked' ? 'revoked' : 'active'}`}>
-              {credential.status === 'revoked' ? 'Revoked' : 'Verified'}
+              {credential.status === 'revoked' ? 'Revoked' : 'Active'}
             </span>
           </div>
         ))}
