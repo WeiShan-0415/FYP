@@ -614,6 +614,36 @@ export default async function handler(req, res) {
 
         console.log('Credentials found:', credentials.length)
 
+        // Check for revocation markers (hashed credential IDs)
+        for (let i = 0; i < credentials.length; i++) {
+          const credential = credentials[i]
+          const credentialHash = ethers.id(credential.id) // Hash the credential ID
+          console.log(`Checking for revocation marker for credential ${credential.id}: ${credentialHash}`)
+          
+          // Look for revocation marker in events
+          for (const event of events) {
+            if (event.args.name === credentialHash) {
+              // Found revocation marker for this credential
+              credential.status = 'revoked'
+              try {
+                // The revocation value is a hex timestamp
+                const revocationTimestamp = parseInt(event.args.value, 16)
+                credential.revokedAt = new Date(revocationTimestamp * 1000).toISOString()
+              } catch (e) {
+                // If we can't parse the timestamp, just mark as revoked
+                credential.revokedAt = new Date().toISOString()
+              }
+              console.log(`✓ Credential ${credential.id.substring(0, 10)}... marked as revoked`)
+              break
+            }
+          }
+
+          // Set default status if not revoked
+          if (!credential.status) {
+            credential.status = 'active'
+          }
+        }
+
         return res.status(200).json({
           success: true,
           credentials: credentials,

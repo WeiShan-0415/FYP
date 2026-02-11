@@ -3,6 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import TabBar from './TabBar';
 
+// Map credential types to appropriate icons
+const getCredentialIcon = (type) => {
+  const iconMap = {
+    'degree': '🎓',
+    'education': '🎓',
+    'certificate': '📜',
+    'professional': '📜',
+    'license': '🪪',
+    'passport': '📕',
+    'identity': '📕',
+    'work': '💼',
+    'employment': '💼',
+    'achievement': '🏅',
+    'badge': '🏅',
+    'health': '⚕️',
+    'medical': '⚕️',
+    'driver': '🚗',
+    'travel': '✈️',
+    'visa': '✈️',
+    'default': '📜'
+  };
+  
+  const normalizedType = type?.toLowerCase().trim() || 'default';
+  return iconMap[normalizedType] || iconMap['default'];
+};
+
 export default function Credential() {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState([]);
@@ -114,8 +140,8 @@ export default function Credential() {
         {!loading && credentials.map((credential, index) => (
           <div key={credential.id || index} className="credentialCard">
             <div className="cardIcon">
-              <span role="img" aria-label="credential" style={{ fontSize: '32px' }}>
-                📜
+              <span role="img" aria-label={credential.type || 'credential'} style={{ fontSize: '32px' }}>
+                {getCredentialIcon(credential.type)}
               </span>
             </div>
             <div
@@ -124,11 +150,13 @@ export default function Credential() {
             >
               <h4 className="cardName">{credential.title || credential.name}</h4>
               <p className="cardIssued">Type: {credential.type}</p>
-              <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>
-                Hash: {credential.hash?.substring(0, 16)}...
-              </p>
+              {credential.status === 'revoked' && credential.revokedAt && (
+                <p className="cardRevoked">Revoked: {new Date(credential.revokedAt).toLocaleDateString()}</p>
+              )}
             </div>
-            <span className="cardStatus active">Verified</span>
+            <span className={`cardStatus ${credential.status === 'revoked' ? 'revoked' : 'active'}`}>
+              {credential.status === 'revoked' ? 'Revoked' : 'Verified'}
+            </span>
           </div>
         ))}
       </main>
