@@ -36,6 +36,15 @@ export default function credentialDetails() {
         qrCode.append(qrRef.current);
       }
     }, [credential]);
+  const copyCredentialId = async () => {
+    if (!credential?.id) return;
+    try {
+      await navigator.clipboard.writeText(credential.id);
+    } catch (error) {
+      console.error('Failed to copy Credential ID:', error);
+    }
+  };
+
   return (
     <div className="appShell">
       {/* Top header */}
@@ -71,7 +80,12 @@ export default function credentialDetails() {
 
         <div className="credentialCard"style={{marginTop: "0px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
-            <h4 className="cardName">Credential ID </h4>
+            <div className="didKeyRow">
+              <h4 className="cardName">Credential ID </h4>
+              <button className="copyDidBtn" onClick={copyCredentialId} aria-label="Copy Credential ID">
+                <img src='/copy.png' alt="Copy Icon" className="copyDidIcon" />
+              </button>
+            </div>
             <p className="cardIssued">{formatMiddleEllipsis(credential?.id)}</p>
           </div>
         </div>
