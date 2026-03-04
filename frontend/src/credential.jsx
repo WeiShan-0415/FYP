@@ -115,7 +115,7 @@ export default function Credential() {
           <span className="totalBadge">{activeCredentialsCount}</span>
           <button
             type="button"
-            className={`revokedToggleBtn ${showRevokedOnly ? 'active' : ''}`}
+            className={`revokedToggleBtn ${showRevokedOnly ? 'active' : 'revoked'}`}
             onClick={() => setShowRevokedOnly(prev => !prev)}
             disabled={revokedCredentialsCount === 0}
           >

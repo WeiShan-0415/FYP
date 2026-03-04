@@ -418,6 +418,10 @@ body {
   color: #059669;
   background: #ecfdf5;
 }
+.revokedToggleBtn.revoked {
+  color: red;
+  background: #fef3c7;
+}
 
 .revokedToggleBtn:disabled {
   cursor: not-allowed;
