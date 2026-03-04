@@ -112,7 +112,7 @@ export default function Credential() {
       <main className="homeCards">
         <div className="titleWithBadge">
           <h5 className="credentialTitle">Total</h5>
-          <span className="totalBadge">{activeCredentialsCount}</span>
+          <span className="totalBadge">{showRevokedOnly ? revokedCredentialsCount : activeCredentialsCount}</span>
           <button
             type="button"
             className={`revokedToggleBtn ${showRevokedOnly ? 'active' : 'revoked'}`}
