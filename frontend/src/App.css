@@ -485,6 +485,13 @@ body {
   opacity: 0.6;
 }
 
+.copyDidIcon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  display: block;
+}
+
 .cardStatus {
   font-size: 12px;
   font-weight: 600;

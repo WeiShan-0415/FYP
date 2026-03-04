@@ -92,7 +92,7 @@ export default function ShareDid() {
                 aria-label="Copy full DID"
                 disabled={!userDID}
               >
-                <img src="/copy.png" alt="Copy Icon" />
+                <img src="/copy.png" alt="Copy Icon" className="copyDidIcon" />
               </button>
             </div>
             <div className="didValueRow">
