@@ -420,7 +420,7 @@ body {
 }
 .revokedToggleBtn.revoked {
   color: red;
-  background: #fef3c7;
+  background: #fee2e2;
 }
 
 .revokedToggleBtn:disabled {
@@ -542,12 +542,6 @@ body {
   color: #d97706;
   background: #fef3c7;
   width:86px;
-}
-
-.cardStatus.revoke {
-  color: red;
-  background: #fef3c7;
-  width:44px;
 }
 
 .cardStatus.revoked {
