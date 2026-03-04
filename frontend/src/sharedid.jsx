@@ -83,9 +83,8 @@ export default function ShareDid() {
 
         <div className="credentialCard"style={{gap: "20px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
-            <h4 className="cardName">DID Key</h4>
-            <div className="didValueRow">
-              <p className="cardIssued">{userDID ? `${userDID.slice(0, 40)}...${userDID.slice(-4)}` : 'Loading...'}</p>
+            <div className="didKeyRow">
+              <h4 className="cardName">DID Key</h4>
               <button
                 type="button"
                 className="copyDidBtn"
@@ -93,8 +92,11 @@ export default function ShareDid() {
                 aria-label="Copy full DID"
                 disabled={!userDID}
               >
-                📋
+                <img src="/copy.png" alt="Copy Icon" />
               </button>
+            </div>
+            <div className="didValueRow">
+              <p className="cardIssued">{userDID ? `${userDID.slice(0, 40)}...${userDID.slice(-4)}` : 'Loading...'}</p>
             </div>
           </div>
           

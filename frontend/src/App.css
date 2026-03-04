@@ -460,6 +460,12 @@ body {
   gap: 8px;
 }
 
+.didKeyRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .copyDidBtn {
   border: 1px solid #cbd5e1;
   background: #fff;
