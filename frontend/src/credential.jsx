@@ -34,8 +34,13 @@ export default function Credential() {
   const [credentials, setCredentials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showRevokedOnly, setShowRevokedOnly] = useState(false);
 
   const activeCredentialsCount = credentials.filter(cred => cred.status !== 'revoked').length;
+  const revokedCredentialsCount = credentials.filter(cred => cred.status === 'revoked').length;
+  const displayedCredentials = showRevokedOnly
+    ? credentials.filter(cred => cred.status === 'revoked')
+    : credentials.filter(cred => cred.status !== 'revoked');
 
   useEffect(() => {
     const fetchCredentials = async () => {
@@ -108,6 +113,14 @@ export default function Credential() {
         <div className="titleWithBadge">
           <h5 className="credentialTitle">Total</h5>
           <span className="totalBadge">{activeCredentialsCount}</span>
+          <button
+            type="button"
+            className={`revokedToggleBtn ${showRevokedOnly ? 'active' : ''}`}
+            onClick={() => setShowRevokedOnly(prev => !prev)}
+            disabled={revokedCredentialsCount === 0}
+          >
+            {showRevokedOnly ? 'Show Active' : 'Show Revoked'}
+          </button>
         </div>
 
         {loading && (
@@ -129,17 +142,17 @@ export default function Credential() {
           </div>
         )}
 
-        {!loading && credentials.length === 0 && !error && (
+        {!loading && displayedCredentials.length === 0 && !error && (
           <div style={{ 
             padding: '20px', 
             textAlign: 'center',
             color: '#666'
           }}>
-            <p>No credentials found on blockchain</p>
+            <p>{showRevokedOnly ? 'No revoked credentials found' : 'No credentials found on blockchain'}</p>
           </div>
         )}
 
-        {!loading && credentials.map((credential, index) => (
+        {!loading && displayedCredentials.map((credential, index) => (
           <div key={credential.id || index} className="credentialCard">
             <div className="cardIcon">
               <span role="img" aria-label={credential.type || 'credential'} style={{ fontSize: '32px' }}>
