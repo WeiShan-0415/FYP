@@ -415,9 +415,8 @@ body {
 }
 
 .revokedToggleBtn.active {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  color: #991b1b;
+  color: #059669;
+  background: #ecfdf5;
 }
 
 .revokedToggleBtn:disabled {
