@@ -36,11 +36,13 @@ export default function Credential() {
   const [error, setError] = useState(null);
   const [showRevokedOnly, setShowRevokedOnly] = useState(false);
 
-  const activeCredentialsCount = credentials.filter(cred => cred.status !== 'revoked').length;
-  const revokedCredentialsCount = credentials.filter(cred => cred.status === 'revoked').length;
+  const isRevokedCredential = (cred) => String(cred?.status || '').toLowerCase() === 'revoked';
+
+  const activeCredentialsCount = credentials.filter(cred => !isRevokedCredential(cred)).length;
+  const revokedCredentialsCount = credentials.filter(cred => isRevokedCredential(cred)).length;
   const displayedCredentials = showRevokedOnly
-    ? credentials.filter(cred => cred.status === 'revoked')
-    : credentials.filter(cred => cred.status !== 'revoked');
+    ? credentials.filter(cred => isRevokedCredential(cred))
+    : credentials.filter(cred => !isRevokedCredential(cred));
 
   useEffect(() => {
     const fetchCredentials = async () => {
@@ -165,12 +167,12 @@ export default function Credential() {
             >
               <h4 className="cardName">{credential.title || credential.name}</h4>
               <p className="cardIssued">Type: {credential.type}</p>
-              {credential.status === 'revoked' && credential.revokedAt && (
+              {isRevokedCredential(credential) && credential.revokedAt && (
                 <p className="cardRevoked">Revoked: {new Date(credential.revokedAt).toLocaleDateString()}</p>
               )}
             </div>
-            <span className={`cardStatus ${credential.status === 'revoked' ? 'revoked' : 'active'}`}>
-              {credential.status === 'revoked' ? 'Revoked' : 'Active'}
+            <span className={`cardStatus ${isRevokedCredential(credential) ? 'revoked' : 'active'}`}>
+              {isRevokedCredential(credential) ? 'Revoked' : 'Active'}
             </span>
           </div>
         ))}
