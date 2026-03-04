@@ -11,6 +11,15 @@ export default function ShareDid() {
   const [username, setUsername] = useState('');
   const qrRef = useRef();
 
+  const copyUserDid = async () => {
+    if (!userDID) return;
+    try {
+      await navigator.clipboard.writeText(userDID);
+    } catch (error) {
+      console.error('Failed to copy DID:', error);
+    }
+  };
+
   useEffect(() => {
     // Retrieve from localStorage
     const user = localStorage.getItem('username');
@@ -75,7 +84,18 @@ export default function ShareDid() {
         <div className="credentialCard"style={{gap: "20px"}}>
           <div className="cardContent" style={{textAlign: "Left"}}>
             <h4 className="cardName">DID Key</h4>
-            <p className="cardIssued">{userDID ? `${userDID.slice(0, 40)}...${userDID.slice(-4)}` : 'Loading...'}</p>
+            <div className="didValueRow">
+              <p className="cardIssued">{userDID ? `${userDID.slice(0, 40)}...${userDID.slice(-4)}` : 'Loading...'}</p>
+              <button
+                type="button"
+                className="copyDidBtn"
+                onClick={copyUserDid}
+                aria-label="Copy full DID"
+                disabled={!userDID}
+              >
+                📋
+              </button>
+            </div>
           </div>
           
         </div>
