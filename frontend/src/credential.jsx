@@ -20,7 +20,7 @@ const getCredentialIcon = (type) => {
     'driver': '🚗',
     'travel': '✈️',
     'visa': '✈️',
-    'default': '📜'
+    // 'default': '📜'
   };
   
   const normalizedType = type?.toLowerCase().trim() || 'default';
