@@ -7,11 +7,19 @@ import QRCodeStyling from 'qr-code-styling';
 
 export default function credentialDetails() {
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const location = useLocation();
+  const { state } = location;
   const qrRef = useRef();
   const credential = state?.credential;
-  const qrDataLink = credential?.id
-    ? `${window.location.origin}/credentialdetails?credentialId=${encodeURIComponent(credential.id)}`
+  const userDid = localStorage.getItem('userDID');
+  const qrText = credential?.id
+    ? `Credential : ${credential.id}\nDID : ${userDid}`
+    : '';
+  const htmlContent = qrText
+    ? `<!doctype html><html><head><meta charset="UTF-8"><title>Credential Info</title></head><body style="font-family:Arial,sans-serif;padding:24px;"><h2>Credential Information</h2><p style="margin:8px 0;white-space:pre-line;">${qrText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p></body></html>`
+    : '';
+  const qrDataLink = htmlContent
+    ? `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
     : '';
   const formatMiddleEllipsis = (value, start = 40, end = 4) => {
     if (!value || typeof value !== 'string') return 'N/A';
@@ -20,10 +28,11 @@ export default function credentialDetails() {
   };
   useEffect(() => {
       if (credential && qrRef.current) {
+        qrRef.current.innerHTML = '';
         const qrCode = new QRCodeStyling({
           width: 200,
           height: 200,
-          data: `Credential: ${credential.id}`,
+          data: qrDataLink,
           margin: 10,
           qrOptions: {
             typeNumber: 0,
@@ -38,7 +47,7 @@ export default function credentialDetails() {
         });
         qrCode.append(qrRef.current);
       }
-    }, [credential]);
+    }, [credential, qrDataLink]);
   const copyCredentialId = async () => {
     if (!credential?.id) return;
     try {
