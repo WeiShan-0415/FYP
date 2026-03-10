@@ -15,12 +15,6 @@ export default function credentialDetails() {
   const qrText = credential?.id
     ? `Credential : ${credential.id}\nDID : ${userDid}`
     : '';
-  const htmlContent = qrText
-    ? `<!doctype html><html><head><meta charset="UTF-8"><title>Credential Info</title></head><body style="font-family:Arial,sans-serif;padding:24px;"><h2>Credential Information</h2><p style="margin:8px 0;white-space:pre-line;">${qrText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p></body></html>`
-    : '';
-  const qrDataLink = htmlContent
-    ? `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
-    : '';
   const formatMiddleEllipsis = (value, start = 40, end = 4) => {
     if (!value || typeof value !== 'string') return 'N/A';
     if (value.length <= start + end + 3) return value;
@@ -32,7 +26,7 @@ export default function credentialDetails() {
         const qrCode = new QRCodeStyling({
           width: 200,
           height: 200,
-          data: qrDataLink,
+          data: qrText,
           margin: 10,
           qrOptions: {
             typeNumber: 0,
@@ -47,7 +41,7 @@ export default function credentialDetails() {
         });
         qrCode.append(qrRef.current);
       }
-    }, [credential, qrDataLink]);
+    }, [credential, qrText]);
   const copyCredentialId = async () => {
     if (!credential?.id) return;
     try {
@@ -80,15 +74,6 @@ export default function credentialDetails() {
             <div ref={qrRef}></div>
             </div>
           </div>
-          {qrDataLink && (
-            <a
-              href={qrDataLink}
-              className="cardIssued"
-              style={{ display: 'block', marginTop: '8px', wordBreak: 'break-all' }}
-            >
-              {formatMiddleEllipsis(qrDataLink, 45, 12)}
-            </a>
-          )}
           <h3 className="didTitle">Your Verifiable Credential</h3>
           </div>
           </div>
