@@ -6,10 +6,8 @@ import TabBar from './TabBar';
 // Map credential types to appropriate icons
 const getCredentialIcon = (type) => {
   const iconMap = {
-    'degree': '🎓',
-    'education': '🎓',
-    'certificate': '📜',
-    'professional': '📜',
+    'University Certification': '/university.png',
+    'Cooking Certification': '/cooking.png',
     'license': '🪪',
     'passport': '📕',
     'identity': '📕',
