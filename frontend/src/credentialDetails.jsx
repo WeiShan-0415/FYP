@@ -10,6 +10,9 @@ export default function credentialDetails() {
   const { state } = useLocation();
   const qrRef = useRef();
   const credential = state?.credential;
+  const qrDataLink = credential?.id
+    ? `${window.location.origin}/credentialdetails?credentialId=${encodeURIComponent(credential.id)}`
+    : '';
   const formatMiddleEllipsis = (value, start = 40, end = 4) => {
     if (!value || typeof value !== 'string') return 'N/A';
     if (value.length <= start + end + 3) return value;
@@ -68,6 +71,15 @@ export default function credentialDetails() {
             <div ref={qrRef}></div>
             </div>
           </div>
+          {qrDataLink && (
+            <a
+              href={qrDataLink}
+              className="cardIssued"
+              style={{ display: 'block', marginTop: '8px', wordBreak: 'break-all' }}
+            >
+              {formatMiddleEllipsis(qrDataLink, 45, 12)}
+            </a>
+          )}
           <h3 className="didTitle">Your Verifiable Credential</h3>
           </div>
           </div>
