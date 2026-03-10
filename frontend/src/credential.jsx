@@ -6,26 +6,28 @@ import TabBar from './TabBar';
 // Map credential types to appropriate icons
 const getCredentialIcon = (type) => {
   const iconMap = {
-    'University Certification': '/university.png',
-    'Cooking Certification': '/cooking.png',
-    'license': '🪪',
-    'passport': '📕',
-    'identity': '📕',
-    'work': '💼',
-    'employment': '💼',
-    'achievement': '🏅',
-    'badge': '🏅',
-    'health': '⚕️',
-    'medical': '⚕️',
-    'driver': '🚗',
-    'travel': '✈️',
-    'visa': '✈️',
-    // 'default': '📜'
+    'university certification': '/university.png',
+    'cooking certification': '/cooking.png',
+    license: '🪪',
+    passport: '📕',
+    identity: '📕',
+    work: '💼',
+    employment: '💼',
+    achievement: '🏅',
+    badge: '🏅',
+    health: '⚕️',
+    medical: '⚕️',
+    driver: '🚗',
+    travel: '✈️',
+    visa: '✈️',
+    default: '📜'
   };
   
   const normalizedType = type?.toLowerCase().trim() || 'default';
-  return iconMap[normalizedType] || iconMap['default'];
+  return iconMap[normalizedType] || iconMap.default;
 };
+
+const isImageIcon = (icon) => typeof icon === 'string' && icon.startsWith('/');
 
 export default function Credential() {
   const navigate = useNavigate();
@@ -155,9 +157,17 @@ export default function Credential() {
         {!loading && displayedCredentials.map((credential, index) => (
           <div key={credential.id || index} className="credentialCard">
             <div className="cardIcon">
-              <span role="img" aria-label={credential.type || 'credential'} style={{ fontSize: '32px' }}>
-                {getCredentialIcon(credential.type)}
-              </span>
+              {isImageIcon(getCredentialIcon(credential.type)) ? (
+                <img
+                  src={getCredentialIcon(credential.type)}
+                  alt={credential.type || 'credential'}
+                  style={{ width: '32px', height: '32px', objectFit: 'contain' }}
+                />
+              ) : (
+                <span role="img" aria-label={credential.type || 'credential'} style={{ fontSize: '32px' }}>
+                  {getCredentialIcon(credential.type)}
+                </span>
+              )}
             </div>
             <div
               className="cardContent"
