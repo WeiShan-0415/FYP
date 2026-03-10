@@ -8,8 +8,8 @@ const getCredentialIcon = (type) => {
   const iconMap = {
     'university certification': '/university.png',
     'cooking certification': '/cooking.png',
-    license: '🪪',
-    passport: '📕',
+    'driving licence': '/driving.png',
+    'passport': '/passport.png',
     identity: '📕',
     work: '💼',
     employment: '💼',
