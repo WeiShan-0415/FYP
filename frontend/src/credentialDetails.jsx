@@ -51,6 +51,15 @@ export default function credentialDetails() {
     }
   };
 
+  const copyQRText = async () => {
+    if (!qrText) return;
+    try {
+      await navigator.clipboard.writeText(qrText);
+    } catch (error) {
+      console.error('Failed to copy QR text:', error);
+    }
+  };
+
   return (
     <div className="appShell">
       {/* Top header */}
@@ -70,7 +79,7 @@ export default function credentialDetails() {
         <div className="credentialDetailsCard">
         <div className="didHeader">
           <div className="credentialDetails">
-            <div className="didIcon">
+            <div className="didIcon" onClick={copyQRText} style={{ cursor: 'pointer' }}>
             <div ref={qrRef}></div>
             </div>
           </div>
